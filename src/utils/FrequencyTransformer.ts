@@ -19,6 +19,7 @@ export class FrequencyTransformer {
     applyFrequencyMultiplier(data: Float32Array, multiplier: number): Float32Array {
       return data.map(value => value * multiplier);
     }
+    
     public transformFrequencies(inputSignal: Float32Array): Float32Array {
       const outputSignal = new Float32Array(inputSignal.length);
   
