@@ -6,7 +6,7 @@ export class DrumSynthesizer extends Synthesizer {
         this.playKick(frequency, duration);
     }
     protected context: AudioContext;
-    private gainNode: GainNode;
+    protected gainNode: GainNode;
 
     constructor(context: AudioContext) {
         super();
