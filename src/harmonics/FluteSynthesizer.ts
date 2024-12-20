@@ -1,7 +1,6 @@
 
 
 import { AmplitudeController } from '../utils';
-import { Synthesizer } from './synthesizer';
 
 export class FluteSynthesizer extends Synthesizer {
     private amplitudeController: AmplitudeController;

@@ -1,80 +1,112 @@
-import { NoiseGenerator } from '../prng/NoiseGenerator';
-import { NoiseGeneratorSynthesizer } from '../prng/NoiseGeneratorSynthesizer';
-import { AmplitudeController } from '../utils/AmplitudeController';
-import { FrequencyTransformer } from '../utils/FrequencyTransformer';
-import { HarmonicSynthesizer } from '../harmonics/instruments/HarmonicSysthesizer';
-import { AudioDriver } from '../audio/AudioDriver';
-import { AudioMixer } from '../audio/AudioMixer';
-import { AudioProcessor } from '../audio/AudioProcessor';
-import { AudioVisualizer } from '../audio/AudioVisualizer';
+import { AudioPlaybackManager, AudioMixer, AudioProcessor, AudioVisualizer } from "../audio";
+import { ViolinSynthesizer, PianoSynthesizer, GuitarSynthesizer, DrumSynthesizer, FluteSynthesizer } from "../harmonics";
+import { Synthesizer, ConcreteSynthesizer } from "../harmonics/Systhesizer";
+import { NoiseGenerator } from "../prng";
+import { NoiseType } from "../prng/NoiseGenerator";
+import { AmplitudeController, FrequencyTransformer } from "../utils";
+
+
+export interface HarmonicWaveConfig {
+  baseFrequency: number;
+  harmonics: number[];
+  amplitudes: number[];
+  canvas?: HTMLCanvasElement;
+}
 
 export class SoniqSound {
   private noiseGenerator: NoiseGenerator;
-  private synthesizer: NoiseGeneratorSynthesizer;
+  private harmonicSynthesizer: Synthesizer;
   private amplitudeController: AmplitudeController;
   private frequencyTransformer: FrequencyTransformer;
-  private harmonicSynthesizer: HarmonicSynthesizer;
-  private audioDriver: AudioDriver;
+  private audioPlaybackManager: AudioPlaybackManager;
   private audioMixer: AudioMixer;
   private audioProcessor: AudioProcessor;
   private audioVisualizer: AudioVisualizer;
+  private instruments: { [key: string]: Synthesizer };
 
-  constructor(seed: number) {
+  constructor(seed: number = Math.random() * 1000) {
     this.noiseGenerator = new NoiseGenerator(seed);
-    this.synthesizer = new NoiseGeneratorSynthesizer(seed);
+    this.harmonicSynthesizer = new ConcreteSynthesizer();
     this.amplitudeController = new AmplitudeController();
     this.frequencyTransformer = new FrequencyTransformer();
-    this.harmonicSynthesizer = new HarmonicSynthesizer();
-    this.audioDriver = new AudioDriver(seed);
+    this.audioPlaybackManager = new AudioPlaybackManager();
     this.audioMixer = new AudioMixer();
     this.audioProcessor = new AudioProcessor();
     this.audioVisualizer = new AudioVisualizer();
+
+    this.instruments = {
+      violin: new ViolinSynthesizer(),
+      piano: new PianoSynthesizer(),
+      guitar: new GuitarSynthesizer(),
+      drum: new DrumSynthesizer(new AudioContext()),
+      flute: new FluteSynthesizer(),
+    };
   }
 
-  public async generateHarmonicWave({
-    baseFrequency,
-    harmonics,
-    amplitudes,
-    canvas
-  }: {
-    baseFrequency: number;
-    harmonics: number[];
-    amplitudes: number[];
-    canvas: HTMLCanvasElement;
-  }): Promise<void> {
+  public async playHarmonicWave(config: HarmonicWaveConfig): Promise<void> {
+    const { baseFrequency, harmonics, amplitudes, canvas } = config;
     try {
-      // Step 1: Generate base noise
-      const rawNoise = this.noiseGenerator.generateNoise('white', 1024);
-      const rawNoiseArray = rawNoise instanceof Float32Array ? rawNoise : new Float32Array([...rawNoise]);
-      const synthesizedNoise = this.synthesizer.synthesizeNoise('white', rawNoiseArray.length);
+      // Generate harmonics
+      const harmonicWave = this.harmonicSynthesizer.synthesizeHarmonics(
+        baseFrequency,
+        harmonics,
+        amplitudes
+      );
 
-      // Step 2: Process harmonics
-      const transformedFrequencies = this.frequencyTransformer.transformFrequencies(rawNoiseArray);
-      const controlledAmplitude = this.amplitudeController.controlAmplitude(transformedFrequencies);
-      const harmonicWave = this.harmonicSynthesizer.synthesizeHarmonics(baseFrequency, harmonics, amplitudes);
+      // Process harmonics
+      const controlledAmplitude = this.amplitudeController.controlAmplitude(harmonicWave);
+      const transformedFrequencies = this.frequencyTransformer.transformFrequencies(
+        controlledAmplitude
+      );
 
-      // Step 3: Process audio
+      // Audio context setup
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const audioBuffer = audioCtx.createBuffer(1, harmonicWave.length, audioCtx.sampleRate);
-      audioBuffer.copyToChannel(harmonicWave, 0);
-      const mixedAudio = this.audioMixer.mixAudio([audioBuffer]);
-      const processedAudio = this.audioProcessor.processAudio(mixedAudio);
+      const audioBuffer = audioCtx.createBuffer(1, transformedFrequencies.length, audioCtx.sampleRate);
+      audioBuffer.copyToChannel(transformedFrequencies, 0);
+      
+      // Play audio
+      this.audioPlaybackManager.play(transformedFrequencies);
 
-      // Step 4: Play audio
-      if (this.audioDriver.playAudio) {
-        await this.audioDriver.playAudio(processedAudio);
-      } else {
-        console.warn('playAudio method not implemented in AudioDriver. Skipping audio playback.');
-      }
-
-      // Step 5: Visualize audio
-      if (this.audioVisualizer.visualizeAudio) {
-        this.audioVisualizer.visualizeAudio(harmonicWave, canvas);
-      } else {
-        console.warn('visualizeAudio method not implemented in AudioVisualizer. Skipping visualization.');
+      // Visualize audio
+      if (canvas) {
+        this.audioVisualizer.visualizeAudio(transformedFrequencies, canvas);
       }
     } catch (error) {
-      console.error('Error generating harmonic wave:', error);
+      console.error("Error playing harmonic wave:", error);
     }
+  }
+
+  public playInstrument(instrument: string, frequency: number, duration: number): void {
+    const synth = this.instruments[instrument];
+    if (!synth) {
+      throw new Error(`Instrument ${instrument} is not available.`);
+    }
+    synth.play(frequency, duration);
+  }
+
+  public generateAndPlayNoise(
+    type: NoiseType,
+    length: number,
+    baseFrequency: number,
+    harmonics: number[],
+    amplitudes: number[]
+  ): void {
+    try {
+      const noise = this.noiseGenerator.generateNoise(type, length);
+      const noiseArray = noise instanceof Float32Array ? noise : Float32Array.from(noise);
+
+      const harmonicsData = this.harmonicSynthesizer.synthesizeHarmonics(baseFrequency, harmonics, amplitudes);
+      const combinedData = noiseArray.map(
+        (value, index) => value + harmonicsData[index % harmonicsData.length]
+      );
+
+      this.audioPlaybackManager.play(combinedData);
+    } catch (error) {
+      console.error("Error generating and playing noise:", error);
+    }
+  }
+
+  public stopAll(): void {
+    this.audioPlaybackManager.stop();
   }
 }
