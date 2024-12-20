@@ -14,7 +14,6 @@ export abstract class Synthesizer {
       this.gainNode.connect(this.context.destination);
   }
 
-  abstract play(frequency: number, duration: number): void;
 
   public setVolume(volume: number): void {
       this.gainNode.gain.setValueAtTime(volume, this.context.currentTime);
