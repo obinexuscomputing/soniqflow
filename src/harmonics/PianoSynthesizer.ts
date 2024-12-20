@@ -1,6 +1,5 @@
-import { AmplitudeController } from '../utils';
+import { AmplitudeController, SharedAudioContext } from '../utils';
 import { BaseSynthesizer, Synthesizer } from './Synthesizer';
-
 
 export class PianoSynthesizer extends BaseSynthesizer implements Synthesizer {
     protected context: AudioContext;
@@ -9,25 +8,12 @@ export class PianoSynthesizer extends BaseSynthesizer implements Synthesizer {
 
     constructor() {
         super();
-        this.context = new AudioContext();
-        this.resumeContext();
-
+        this.context = SharedAudioContext.getInstance();
         this.amplitudeController = new AmplitudeController();
         this.gainNode = this.context.createGain();
-            this.gainNode.connect(this.context.destination);
-        }
-
-    private resumeContext(): void {
-        if (this.context.state === 'suspended') {
-            const resume = () => {
-                this.context.resume();
-                document.removeEventListener('click', resume);
-                document.removeEventListener('keydown', resume);
-            };
-            document.addEventListener('click', resume);
-            document.addEventListener('keydown', resume);
-        }
+        this.gainNode.connect(this.context.destination);
     }
+
     public synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array {
         const sampleRate = this.context.sampleRate;
         const bufferLength = sampleRate; // 1 second buffer
