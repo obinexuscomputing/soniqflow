@@ -47,7 +47,7 @@ Here's a basic example of how to use SoniqWave to generate and visualize harmoni
                     // Setup parameters
                     const baseFrequency = 440; // A4 in Hz
                     const harmonics = [1, 2, 3, 4, 5]; // Multiples of the base frequency
-                    const amplitudes = [1.5, 1.2, 1.0, 0.8, 0.6]; // Increased amplitudes for louder sound
+                    const amplitudes = [1.5, 1.2, 1.0, 1.8, 1.6]; // Increased amplitudes for louder sound
 
                     // Generate harmonic wave from background noise
                     await soniqWave.generateHarmonicWave({
@@ -57,21 +57,28 @@ Here's a basic example of how to use SoniqWave to generate and visualize harmoni
                         canvas, // Pass canvas to generateHarmonicWave
                     });
 
-                    console.log("Harmonic wave generated and played!");
+                    // Create an audio context
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(baseFrequency, audioContext.currentTime); // Set frequency to baseFrequency
+
+                    // Connect oscillator to the audio context's destination (speakers)
+                    oscillator.connect(audioContext.destination);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 2); // Play sound for 2 seconds
+
                 } catch (error) {
                     console.error("Error initializing SoniqWave:", error);
                 }
             };
 
-            document.getElementById("start-demo").addEventListener("click", initializeSoniqWave);
+            initializeSoniqWave();
         });
     </script>
 </head>
 <body>
-    <h1>SoniqWave Demo</h1>
-    <button id="start-demo">Start Harmonic Wave</button>
-    <p>Click the button above to generate and play harmonic music from background noise.</p>
-    <canvas id="visualization" width="800" height="400" style="border: 1px solid black;"></canvas>
+    <canvas id="visualization" width="800" height="600"></canvas>
 </body>
 </html>
 ```
