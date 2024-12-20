@@ -26,7 +26,7 @@
                     // Initialize SoniqWave with a seed
                     const seed = Math.floor(Math.random() * 1000);
                     const soniqWave = new SoniqWave.SoniqSound(seed);
-                    const playbackManager = new SoniqWave.AudioPlaybackManager();
+                    const playbackManager = new SoniqWave.AudioPlaybackManager(bubbles = true);
 
                     // Get canvas element for visualization
                     const canvas = document.getElementById("visualization");

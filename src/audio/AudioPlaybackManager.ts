@@ -7,7 +7,10 @@ export class AudioPlaybackManager {
     this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
   }
 
-  play(data: Float32Array, bubble: boolean = true): void {
+  async play(data: Float32Array, bubble: boolean = true): Promise<void> {
+    if (this.audioContext.state === 'suspended') {
+      await this.audioContext.resume();
+    }
     const buffer = this.audioContext.createBuffer(1, data.length, this.audioContext.sampleRate);
     buffer.copyToChannel(data, 0);
 
