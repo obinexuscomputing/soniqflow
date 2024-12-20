@@ -1,7 +1,7 @@
 import { NoiseGenerator } from '../prng/NoiseGenerator';
 import { NoiseGeneratorSynthesizer } from '../prng/NoiseGeneratorSynthesizer';
-import { AmplitudeController } from '../harmonics/AmplitudeController';
-import { FrequencyTransformer } from '../harmonics/FrequencyTransformer';
+import { AmplitudeController } from '../utils/AmplitudeController';
+import { FrequencyTransformer } from '../utils/FrequencyTransformer';
 import { HarmonicSynthesizer } from '../harmonics/instruments/HarmonicSysthesizer';
 import { AudioDriver } from '../audio/AudioDriver';
 import { AudioMixer } from '../audio/AudioMixer';

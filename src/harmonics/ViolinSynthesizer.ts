@@ -1,11 +1,14 @@
-import { Synthesizer } from "./Synthesizer";
+import { Synthesizer } from "./Systhesizer";
 
 export class ViolinSynthesizer extends Synthesizer {
     private oscillator: OscillatorNode;
+    private gainNode: GainNode;
 
     constructor() {
         super();
         this.oscillator = this.context.createOscillator();
+        this.gainNode = this.context.createGain();
+        this.oscillator.connect(this.gainNode);
         this.oscillator.connect(this.gainNode);
     }
 

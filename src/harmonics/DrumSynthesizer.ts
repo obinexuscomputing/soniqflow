@@ -1,6 +1,20 @@
-import { Synthesizer } from "./Synthesizer";
+import { Synthesizer } from "./Systhesizer";
 
 export class DrumSynthesizer extends Synthesizer {
+    play(frequency: number, duration: number): void {
+        // Default implementation to play a kick drum sound
+        this.playKick(frequency, duration);
+    }
+    protected context: AudioContext;
+    private gainNode: GainNode;
+
+    constructor(context: AudioContext) {
+        super();
+        this.context = context;
+        this.gainNode = this.context.createGain();
+        this.gainNode.connect(this.context.destination);
+    }
+
     public playKick(frequency: number = 150, duration: number = 0.5): void {
         const oscillator = this.context.createOscillator();
         oscillator.type = "sine";

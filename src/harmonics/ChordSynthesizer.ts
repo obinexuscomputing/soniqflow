@@ -1,5 +1,5 @@
 import { Synthesizer } from "./Synthesizer";
-import { AmplitudeController } from "../AmplitudeController";
+import { AmplitudeController } from "../../utils/AmplitudeController";
 
 export class ChordSynthesizer extends Synthesizer {
     private amplitudeController: AmplitudeController;
