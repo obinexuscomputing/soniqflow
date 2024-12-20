@@ -14,6 +14,16 @@ export class AudioDriver {
     this.audioPlaybackManager = new AudioPlaybackManager();
   }
 
+  
+  public async playAudio(audioBuffer: AudioBuffer): Promise<void> {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioCtx.destination);
+    source.start();
+
+  }
+
   generateAndPlayNoise(type: NoiseType, length: number, baseFrequency: number, harmonics: number[], amplitudes: number[]): void {
     const noise = this.noiseGenerator.generateNoise(type, length);
     const noiseArray = noise instanceof Float32Array ? noise : Float32Array.from(noise);
