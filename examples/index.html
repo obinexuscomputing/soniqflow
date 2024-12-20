@@ -1,90 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoniqSound Demo</title>
-    <script src="../dist/index.umd.js" defer></script>
-    <script>
-        let soniq;
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const setupButton = document.getElementById("setup-audio");
-            const buttons = document.querySelectorAll(".action-button");
-
-            if (!setupButton) {
-                console.error("'setup-audio' button not found.");
-                return;
-            }
-
-            setupButton.addEventListener("click", () => {
-                try {
-                    const seed = 12345;
-                    soniq = new SoniqWave.SoniqSound(seed);
-
-                    if (SoniqWave.sharedAudioContext.state === "suspended") {
-                        SoniqWave.sharedAudioContext.resume().then(() => {
-                            console.log("AudioContext resumed successfully.");
-                            setupButton.disabled = true;
-                            buttons.forEach(button => button.disabled = false);
-                        }).catch(error => {
-                            console.error("Error resuming AudioContext:", error);
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error setting up SoniqSound:", error);
-                }
-            });
-
-            const checkSoniqInitialized = () => {
-                if (!soniq) {
-                    console.error("SoniqSound is not initialized. Please click 'Setup Audio' first.");
-                    return false;
-                }
-                return true;
-            };
-
-            document.getElementById("play-harmonic")?.addEventListener("click", () => {
-                if (!checkSoniqInitialized()) return;
-                soniq.playHarmonicWave({
-                    baseFrequency: 440,
-                    harmonics: [1, 2, 3, 4],
-                    amplitudes: [1.0, 0.8, 0.6, 0.4],
-                    canvas: document.getElementById("visualization")
-                });
-            });
-
-            document.getElementById("play-instrument")?.addEventListener("click", () => {
-                if (!checkSoniqInitialized()) return;
-                soniq.playInstrument("piano", 440, 2.5);
-            });
-
-            document.getElementById("play-noise")?.addEventListener("click", () => {
-                if (!checkSoniqInitialized()) return;
-                soniq.generateAndPlayNoise("white", 1024, 440, [1, 2], [1, 0.5]);
-            });
-
-            document.getElementById("stop-all")?.addEventListener("click", () => {
-                if (!checkSoniqInitialized()) return;
-                soniq.stopAll();
-            });
-
-            buttons.forEach(button => button.disabled = true);
-        });
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoniqWave Example</title>
+  <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <h1>SoniqSound Demo</h1>
-    <button id="setup-audio">Setup Audio</button>
-    <button id="play-harmonic" class="action-button">Play Harmonic Wave</button>
-    <button id="play-instrument" class="action-button">Play Instrument</button>
-    <button id="play-noise" class="action-button">Play Noise</button>
-    <button id="stop-all" class="action-button">Stop All Playback</button>
+  <h1>SoniqWave Audio Synthesis</h1>
+  <button id="playWave">Play Harmonic Wave</button>
+  <button id="stopWave">Stop Audio</button>
+  <canvas id="visualizer" width="800" height="400" style="border:1px solid #000;"></canvas>
 
-    <p>Harmonic wave visualization:</p>
-    <canvas id="visualization" width="800" height="400" style="border: 1px so
-lid black;"></canvas>
+  <script type="module">
+    import { SoniqSound } from '../dist/index.js';
 
-    <p>Open the browser console to see more details.</p>
+    const soniqSound = new SoniqSound();
+
+    document.getElementById('playWave').addEventListener('click', async () => {
+      try {
+        await soniqSound.playHarmonicWave({
+          baseFrequency: 440,
+          harmonics: [1, 2, 3],
+          amplitudes: [1, 0.5, 0.25],
+          canvas: document.getElementById('visualizer')
+        });
+      } catch (error) {
+        console.error('Error playing harmonic wave:', error);
+      }
+    });
+
+    document.getElementById('stopWave').addEventListener('click', () => {
+      try {
+        soniqSound.stopAll();
+      } catch (error) {
+        console.error('Error stopping audio:', error);
+      }
+    });
+  </script>
 </body>
 </html>

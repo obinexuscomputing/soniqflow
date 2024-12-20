@@ -1,4 +1,4 @@
-import { AmplitudeController } from '../utils';
+import { AmplitudeController, SharedAudioContext } from '../utils';
 import { BaseSynthesizer } from './Synthesizer';
 
 export class FluteSynthesizer extends BaseSynthesizer {
@@ -8,9 +8,14 @@ export class FluteSynthesizer extends BaseSynthesizer {
 
     constructor() {
         super();
-        this.context = new AudioContext();
+        this.context = SharedAudioContext.getInstance();
         this.gainNode = this.context.createGain();
         this.gainNode.connect(this.context.destination);
+        document.addEventListener('click', () => {
+            if (this.context.state === 'suspended') {
+                this.context.resume();
+            }
+        });
     }
 
     public synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array {
