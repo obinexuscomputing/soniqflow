@@ -53,16 +53,24 @@ export class SoniqWave {
 
       // Step 3: Process audio
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const harmonicWaveBuffer = audioCtx.createBuffer(1, harmonicWave.length, audioCtx.sampleRate);
-      harmonicWaveBuffer.copyToChannel(harmonicWave, 0);
-      const mixedAudio = this.audioMixer.mixAudio([harmonicWaveBuffer]);
+      const audioBuffer = audioCtx.createBuffer(1, harmonicWave.length, audioCtx.sampleRate);
+      audioBuffer.copyToChannel(harmonicWave, 0);
+      const mixedAudio = this.audioMixer.mixAudio([audioBuffer]);
       const processedAudio = this.audioProcessor.processAudio(mixedAudio);
 
       // Step 4: Play audio
-      await this.audioDriver.playAudio(processedAudio);
+      if (this.audioDriver.playAudio) {
+        await this.audioDriver.playAudio(processedAudio);
+      } else {
+        console.warn('playAudio method not implemented in AudioDriver. Skipping audio playback.');
+      }
 
       // Step 5: Visualize audio
-      this.audioVisualizer.visualizeAudio(processedAudio);
+      if (this.audioVisualizer.visualizeAudio) {
+        this.audioVisualizer.visualizeAudio(processedAudio);
+      } else {
+        console.warn('visualizeAudio method not implemented in AudioVisualizer. Skipping visualization.');
+      }
     } catch (error) {
       console.error('Error generating harmonic wave:', error);
     }

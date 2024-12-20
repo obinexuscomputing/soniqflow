@@ -6,7 +6,7 @@ import { AudioPlaybackManager } from "./AudioPlaybackManager";
 
 export class AudioDriver {
     playAudio(processedAudio: any) {
-        throw new Error('Method not implemented.');
+        
     }
     private noiseGenerator: NoiseGenerator;
     private harmonicSynthesizer: HarmonicSynthesizer;
@@ -25,7 +25,7 @@ export class AudioDriver {
         const combinedData = noiseArray.map((value, index) => value + harmonicsData[index % harmonicsData.length]);
         this.audioPlaybackManager.play(combinedData);
     }
-
+    
     stop(): void {
         this.audioPlaybackManager.stop();
     }
