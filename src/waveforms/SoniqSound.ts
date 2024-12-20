@@ -46,16 +46,29 @@ export class SoniqSound {
     };
   }
 
+  public async initializeAudioContext(): Promise<void> {
+    if (sharedAudioContext.state === "suspended") {
+      try {
+        await sharedAudioContext.resume();
+      } catch (error) {
+        console.error("Error resuming AudioContext:", error);
+      }
+    }
+  }
+
   public async playHarmonicWave(config: HarmonicWaveConfig): Promise<void> {
     const { baseFrequency, harmonics, amplitudes, canvas } = config;
     try {
+      // Ensure AudioContext is ready
+      await this.initializeAudioContext();
+
       // Generate harmonics
       const harmonicWave = this.harmonicSynthesizer.synthesizeHarmonics(
         baseFrequency,
         harmonics,
         amplitudes
       );
-      
+
       // Process harmonics
       const envelope = new Float32Array(harmonicWave.length).fill(1); // Example envelope
       const gain = 1; // Example gain
@@ -63,11 +76,6 @@ export class SoniqSound {
       const transformedFrequencies = this.frequencyTransformer.transformFrequencies(
         controlledAmplitude
       );
-
-      // Resume shared AudioContext if necessary
-      if (sharedAudioContext.state === "suspended") {
-        await sharedAudioContext.resume();
-      }
 
       // Play audio
       this.audioPlaybackManager.play(transformedFrequencies, transformedFrequencies.length / sharedAudioContext.sampleRate);
