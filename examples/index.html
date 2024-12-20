@@ -8,7 +8,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             console.log("SoniqWave library loaded:", SoniqWave);
-            
+
             const initializeSoniqWave = async () => {
                 try {
                     // Initialize SoniqWave with a seed
@@ -27,6 +27,16 @@
                         amplitudes,
                     });
 
+                    // Visualization Example
+                    const canvas = document.getElementById("visualization") ;
+                    if (canvas) {
+                        const visualizer = new SoniqWave.AudioVisualizer();
+
+                        // Generate example waveform data
+                        const waveformData = new Float32Array(1024).map(() => Math.random() * 2 - 1);
+                        visualizer.visualizeWaveform(waveformData, canvas);
+                    }
+
                     console.log("Harmonic wave generated and played!");
                 } catch (error) {
                     console.error("Error initializing SoniqWave:", error);
@@ -41,5 +51,6 @@
     <h1>SoniqWave Demo</h1>
     <button id="start-demo">Start Harmonic Wave</button>
     <p>Click the button above to generate and play harmonic music from background noise.</p>
+    <canvas id="visualization" width="800" height="400" style="border: 1px solid black;"></canvas>
 </body>
 </html>
