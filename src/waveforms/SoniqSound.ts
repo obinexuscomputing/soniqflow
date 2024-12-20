@@ -21,6 +21,8 @@ export class SoniqSound {
   private frequencyTransformer: FrequencyTransformer;
   private audioPlaybackManager: AudioPlaybackManager;
   private audioVisualizer: AudioVisualizer;
+  private audioProcessor: AudioProcessor;
+  private audioMixer: AudioMixer;
   private instruments: { [key: string]: Synthesizer };
 
   constructor(seed: number = Math.random() * 1000) {

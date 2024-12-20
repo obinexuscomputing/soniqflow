@@ -2,7 +2,7 @@ export class AudioProcessor {
     process(data: Float32Array): Float32Array {
         return data;
     }
-
+    
     processAudio(buffer: AudioBuffer | Float32Array): AudioBuffer {
         if (buffer instanceof AudioBuffer) {
             const data = buffer.getChannelData(0);
