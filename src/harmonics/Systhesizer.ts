@@ -40,6 +40,28 @@ export abstract class Synthesizer {
         }
         return buffer;
     }
+
+    public synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array {
+        const length = Math.floor(this.context.sampleRate * 1); // Default 1 second buffer
+        const buffer = new Float32Array(length);
+
+        harmonics.forEach((harmonic, index) => {
+            const amplitude = amplitudes[index] || 1;
+            for (let i = 0; i < length; i++) {
+                buffer[i] += amplitude * Math.sin(2 * Math.PI * (baseFrequency * harmonic) * (i / this.context.sampleRate));
+            }
+        });
+
+        // Normalize buffer
+        const maxAmplitude = Math.max(...buffer.map(Math.abs));
+        if (maxAmplitude > 0) {
+            for (let i = 0; i < buffer.length; i++) {
+                buffer[i] /= maxAmplitude;
+            }
+        }
+
+        return buffer;
+    }
 }
 
 // Concrete Synthesizer Implementation
