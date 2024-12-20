@@ -31,7 +31,15 @@ export class SoniqWave {
     this.audioVisualizer = new AudioVisualizer();
   }
 
-  public async generateHarmonicWave(): Promise<void> {
+  public async generateHarmonicWave({
+    baseFrequency,
+    harmonics,
+    amplitudes,
+  }: {
+    baseFrequency: number;
+    harmonics: number[];
+    amplitudes: number[];
+  }): Promise<void> {
     try {
       // Step 1: Generate base noise
       const rawNoise = this.noiseGenerator.generateNoise('white', 1024);
@@ -41,10 +49,10 @@ export class SoniqWave {
       // Step 2: Process harmonics
       const transformedFrequencies = this.frequencyTransformer.transformFrequencies(synthesizedNoise);
       const controlledAmplitude = this.amplitudeController.controlAmplitude(transformedFrequencies);
-      const harmonics = this.harmonicSynthesizer.synthesizeHarmonics(controlledAmplitude);
+      const harmonicWave = this.harmonicSynthesizer.synthesizeHarmonics(baseFrequency, harmonics, amplitudes);
 
       // Step 3: Process audio
-      const mixedAudio = this.audioMixer.mixAudio(harmonics);
+      const mixedAudio = this.audioMixer.mixAudio(harmonicWave);
       const processedAudio = this.audioProcessor.processAudio(mixedAudio);
 
       // Step 4: Play audio
