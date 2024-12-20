@@ -43,11 +43,11 @@ export class SoniqWave {
     try {
       // Step 1: Generate base noise
       const rawNoise = this.noiseGenerator.generateNoise('white', 1024);
-      const rawNoiseArray = rawNoise instanceof Float32Array ? rawNoise : new Float32Array(rawNoise);
+      const rawNoiseArray = rawNoise instanceof Float32Array ? rawNoise : new Float32Array([...rawNoise]);
       const synthesizedNoise = this.synthesizer.synthesizeNoise('white', rawNoiseArray.length);
 
       // Step 2: Process harmonics
-      const transformedFrequencies = this.frequencyTransformer.transformFrequencies(synthesizedNoise);
+      const transformedFrequencies = this.frequencyTransformer.transformFrequencies(rawNoiseArray);
       const controlledAmplitude = this.amplitudeController.controlAmplitude(transformedFrequencies);
       const harmonicWave = this.harmonicSynthesizer.synthesizeHarmonics(baseFrequency, harmonics, amplitudes);
 
