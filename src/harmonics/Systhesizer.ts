@@ -12,6 +12,13 @@ export abstract class Synthesizer {
       this.context = new AudioContext();
       this.gainNode = this.context.createGain();
       this.gainNode.connect(this.context.destination);
+
+      // Resume AudioContext after a user gesture
+      document.addEventListener('click', () => {
+          if (this.context.state === 'suspended') {
+              this.context.resume();
+          }
+      });
   }
 
 
