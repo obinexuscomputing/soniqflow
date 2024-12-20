@@ -1,18 +1,17 @@
 export class AudioPlaybackManager {
-    private context: AudioContext;
+    private static sharedContext: AudioContext = new AudioContext();
     private gainNode: GainNode;
 
     constructor() {
-        this.context = new AudioContext();
-        this.gainNode = this.context.createGain();
-        this.gainNode.connect(this.context.destination);
+        this.gainNode = AudioPlaybackManager.sharedContext.createGain();
+        this.gainNode.connect(AudioPlaybackManager.sharedContext.destination);
         this.setupAudioContextResume();
     }
 
     private setupAudioContextResume(): void {
         const resumeContext = () => {
-            if (this.context.state === 'suspended') {
-                this.context.resume();
+            if (AudioPlaybackManager.sharedContext.state === 'suspended') {
+                AudioPlaybackManager.sharedContext.resume();
             }
         };
         document.addEventListener('click', resumeContext);
@@ -20,7 +19,7 @@ export class AudioPlaybackManager {
     }
 
     public setVolume(volume: number): void {
-        this.gainNode.gain.setValueAtTime(volume, this.context.currentTime);
+        this.gainNode.gain.setValueAtTime(volume, AudioPlaybackManager.sharedContext.currentTime);
     }
 
     public play(buffer: Float32Array, duration: number): void {
@@ -28,14 +27,14 @@ export class AudioPlaybackManager {
     }
 
     public playBuffer(buffer: Float32Array, duration: number): void {
-        const audioBuffer = this.context.createBuffer(1, buffer.length, this.context.sampleRate);
+        const audioBuffer = AudioPlaybackManager.sharedContext.createBuffer(1, buffer.length, AudioPlaybackManager.sharedContext.sampleRate);
         audioBuffer.copyToChannel(buffer, 0);
 
-        const bufferSource = this.context.createBufferSource();
+        const bufferSource = AudioPlaybackManager.sharedContext.createBufferSource();
         bufferSource.buffer = audioBuffer;
         bufferSource.connect(this.gainNode);
         bufferSource.start();
-        bufferSource.stop(this.context.currentTime + duration);
+        bufferSource.stop(AudioPlaybackManager.sharedContext.currentTime + duration);
     }
 
     static async loadAudioBuffer(url: string): Promise<Float32Array> {
@@ -46,9 +45,8 @@ export class AudioPlaybackManager {
     }
 
     private static async decodeAudioData(arrayBuffer: ArrayBuffer): Promise<AudioBuffer> {
-        const context = new AudioContext();
         return new Promise((resolve, reject) => {
-            context.decodeAudioData(arrayBuffer, resolve, reject);
+            AudioPlaybackManager.sharedContext.decodeAudioData(arrayBuffer, resolve, reject);
         });
     }
 
@@ -58,26 +56,26 @@ export class AudioPlaybackManager {
     }
 
     public stop(): void {
-        this.context.close();
+        this.gainNode.disconnect();
     }
 
     protected generateSineWaveBuffer(frequency: number, duration: number): Float32Array {
-        const length = Math.floor(this.context.sampleRate * duration);
+        const length = Math.floor(AudioPlaybackManager.sharedContext.sampleRate * duration);
         const buffer = new Float32Array(length);
         for (let i = 0; i < length; i++) {
-            buffer[i] = Math.sin(2 * Math.PI * frequency * (i / this.context.sampleRate));
+            buffer[i] = Math.sin(2 * Math.PI * frequency * (i / AudioPlaybackManager.sharedContext.sampleRate));
         }
         return buffer;
     }
 
     public synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array {
-        const length = Math.floor(this.context.sampleRate * 1); // Default 1 second buffer
+        const length = Math.floor(AudioPlaybackManager.sharedContext.sampleRate * 1); // Default 1 second buffer
         const buffer = new Float32Array(length);
 
         harmonics.forEach((harmonic, index) => {
             const amplitude = amplitudes[index] || 1;
             for (let i = 0; i < length; i++) {
-                buffer[i] += amplitude * Math.sin(2 * Math.PI * (baseFrequency * harmonic) * (i / this.context.sampleRate));
+                buffer[i] += amplitude * Math.sin(2 * Math.PI * (baseFrequency * harmonic) * (i / AudioPlaybackManager.sharedContext.sampleRate));
             }
         });
 
@@ -98,7 +96,7 @@ export class AudioPlaybackManager {
     }
 
     public playChord(frequencies: number[], duration: number): void {
-        const length = Math.floor(this.context.sampleRate * duration);
+        const length = Math.floor(AudioPlaybackManager.sharedContext.sampleRate * duration);
         const chordBuffer = new Float32Array(length);
 
         frequencies.forEach(frequency => {

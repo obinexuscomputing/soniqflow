@@ -1,28 +1,32 @@
+
 import { Synthesizer } from "./Synthesizer";
 
 export class GuitarSynthesizer extends Synthesizer {
+    private static sharedContext: AudioContext = new AudioContext();
+    protected gainNode: GainNode;
     private oscillator: OscillatorNode;
-    context: AudioContext;
-    gainNode: GainNode;
+
     constructor() {
         super();
-        this.context = new AudioContext();
-        this.gainNode = this.context.createGain();
-        this.oscillator = this.context.createOscillator();
+        this.gainNode = GuitarSynthesizer.sharedContext.createGain();
+        this.oscillator = GuitarSynthesizer.sharedContext.createOscillator();
         this.oscillator.connect(this.gainNode);
+        this.gainNode.connect(GuitarSynthesizer.sharedContext.destination);
     }
 
     public play(frequency: number, duration: number): void {
-        if (this.context.state === 'suspended') {
-            this.context.resume().then(() => {
-                this.oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
-                this.oscillator.start();
-                this.oscillator.stop(this.context.currentTime + duration);
+        if (GuitarSynthesizer.sharedContext.state === 'suspended') {
+            GuitarSynthesizer.sharedContext.resume().then(() => {
+                this.startOscillator(frequency, duration);
             });
         } else {
-            this.oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
-            this.oscillator.start();
-            this.oscillator.stop(this.context.currentTime + duration);
+            this.startOscillator(frequency, duration);
         }
+    }
+
+    private startOscillator(frequency: number, duration: number): void {
+        this.oscillator.frequency.setValueAtTime(frequency, GuitarSynthesizer.sharedContext.currentTime);
+        this.oscillator.start(GuitarSynthesizer.sharedContext.currentTime);
+        this.oscillator.stop(GuitarSynthesizer.sharedContext.currentTime + duration);
     }
 }
