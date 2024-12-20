@@ -52,7 +52,10 @@ export class SoniqWave {
       const harmonicWave = this.harmonicSynthesizer.synthesizeHarmonics(baseFrequency, harmonics, amplitudes);
 
       // Step 3: Process audio
-      const mixedAudio = this.audioMixer.mixAudio(harmonicWave);
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const harmonicWaveBuffer = audioCtx.createBuffer(1, harmonicWave.length, audioCtx.sampleRate);
+      harmonicWaveBuffer.copyToChannel(harmonicWave, 0);
+      const mixedAudio = this.audioMixer.mixAudio([harmonicWaveBuffer]);
       const processedAudio = this.audioProcessor.processAudio(mixedAudio);
 
       // Step 4: Play audio
