@@ -54,7 +54,9 @@ export class SoniqSound {
       );
 
       // Process harmonics
-      const controlledAmplitude = this.amplitudeController.controlAmplitude(harmonicWave);
+      const envelope = new Float32Array(harmonicWave.length).fill(1); // Example envelope
+      const gain = 1; // Example gain
+      const controlledAmplitude = this.amplitudeController.controlAmplitude(harmonicWave, envelope, gain);
       const transformedFrequencies = this.frequencyTransformer.transformFrequencies(
         controlledAmplitude
       );
