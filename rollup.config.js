@@ -18,7 +18,7 @@ export default {
     {
       file: 'dist/index.umd.js',
       format: 'umd',
-      name: 'SoniqFlow',
+      name: 'SoniqWave',
       sourcemap: true
     }
   ],
