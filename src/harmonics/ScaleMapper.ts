@@ -20,4 +20,17 @@ export class ScaleMapper {
   getAvailableScales(): string[] {
     return Object.keys(this.scales);
   }
+
+  addScale(name: string, intervals: number[]): void {
+    this.scales[name] = intervals;
+  }
+
+  removeScale(name: string): void {
+    delete this.scales[name];
+  }
+
+  clearScales(): void {
+    this.scales = {};
+  }
+  
 }
