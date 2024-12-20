@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoniqWave Demo</title>
+    <script src="../dist/index.umd.js" defer></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                // Initialize SoniqWave with a seed
+                const seed = Math.floor(Math.random() * 1000);
+                const soniqWave = new SoniqWave(seed);
+
+                // Setup parameters
+                const baseFrequency = 440; // A4 in Hz
+                const harmonics = [1, 2, 3, 4, 5]; // Multiples of the base frequency
+                const amplitudes = [0.8, 0.6, 0.4, 0.2, 0.1]; // Relative amplitudes
+
+                // Generate harmonic wave from background noise
+                await soniqWave.generateHarmonicWave({
+                    baseFrequency,
+                    harmonics,
+                    amplitudes
+                });
+
+                console.log("Harmonic wave generated and played!");
+            } catch (error) {
+                console.error("Error in SoniqWave demo:", error);
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>SoniqWave Demo</h1>
+    <p>Harmonic music generated from background noise is playing. Check the console for details.</p>
+</body>
+</html>
