@@ -5,6 +5,7 @@ import { NoiseGenerator } from "../prng";
 import { NoiseType } from "../prng/NoiseGenerator";
 import { AmplitudeController, FrequencyTransformer } from "../utils";
 
+const sharedAudioContext = new AudioContext();
 
 export interface HarmonicWaveConfig {
   baseFrequency: number;
@@ -38,7 +39,7 @@ export class SoniqSound {
       violin: new ViolinSynthesizer(),
       piano: new PianoSynthesizer(),
       guitar: new GuitarSynthesizer(),
-      drum: new DrumSynthesizer(new AudioContext()),
+      drum: new DrumSynthesizer(sharedAudioContext),
       flute: new FluteSynthesizer(),
     };
   }
@@ -61,15 +62,14 @@ export class SoniqSound {
         controlledAmplitude
       );
 
-      // Audio context setup
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      // Audio context setup
-      await audioCtx.resume();
-      
-      // Play audio
-      this.audioPlaybackManager.play(transformedFrequencies, transformedFrequencies.length / audioCtx.sampleRate);
+      // Resume shared AudioContext if necessary
+      if (sharedAudioContext.state === "suspended") {
+        await sharedAudioContext.resume();
+      }
 
-      this.audioPlaybackManager.play(transformedFrequencies, transformedFrequencies.length / audioCtx.sampleRate);
+      // Play audio
+      this.audioPlaybackManager.play(transformedFrequencies, transformedFrequencies.length / sharedAudioContext.sampleRate);
+
       if (canvas) {
         this.audioVisualizer.visualizeAudio(transformedFrequencies, canvas);
       }
@@ -102,7 +102,7 @@ export class SoniqSound {
         (value, index) => value + harmonicsData[index % harmonicsData.length]
       );
 
-      this.audioPlaybackManager.play(combinedData, combinedData.length / 44100); // Assuming a sample rate of 44100 Hz
+      this.audioPlaybackManager.play(combinedData, combinedData.length / sharedAudioContext.sampleRate); // Assuming a sample rate of 44100 Hz
     } catch (error) {
       console.error("Error generating and playing noise:", error);
     }
