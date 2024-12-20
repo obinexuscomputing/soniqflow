@@ -1,7 +1,8 @@
+import { Synthesizer } from "./Systhesizer";
 
 export class GuitarSynthesizer extends Synthesizer {
     private oscillator: OscillatorNode;
-    context: AudioContext;
+    context: AudioContext = new AudioContext();
     gainNode: GainNode;
     constructor() {
         super();

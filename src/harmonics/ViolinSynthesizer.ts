@@ -2,7 +2,7 @@ import { Synthesizer } from "./Systhesizer";
 
 export class ViolinSynthesizer extends Synthesizer {
     private oscillator: OscillatorNode;
-    private gainNode: GainNode;
+    protected gainNode: GainNode;
 
     constructor() {
         super();

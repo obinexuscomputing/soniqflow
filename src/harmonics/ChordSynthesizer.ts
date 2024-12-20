@@ -1,12 +1,13 @@
 
 import { AmplitudeController } from '../utils';
-import { Synthesizer } from './Synthesizer';
+import { Synthesizer } from './Systhesizer';
 
 export class ChordSynthesizer extends Synthesizer {
     private amplitudeController: AmplitudeController;
+    sampleRate: number;
 
     constructor(sampleRate: number = 44100) {
-        super(sampleRate);
+        super();
         this.amplitudeController = new AmplitudeController();
     }
 
@@ -24,5 +25,8 @@ export class ChordSynthesizer extends Synthesizer {
         const normalizedChord = this.amplitudeController.normalizeAmplitudes(chordData);
         const envelope = this.amplitudeController.generateAmplitudeEnvelope(length);
         return this.amplitudeController.applyAmplitudeEnvelope(normalizedChord, envelope);
+    }
+    generateSineWave(frequency: number, length: number) {
+        throw new Error('Method not implemented.');
     }
 }
