@@ -1,4 +1,3 @@
-
 export class AudioPlaybackManager {
   private audioContext: AudioContext;
   private source: AudioBufferSourceNode | null = null;
@@ -8,9 +7,13 @@ export class AudioPlaybackManager {
   }
 
   async play(data: Float32Array, bubble: boolean = true): Promise<void> {
+    if (!data || !data.length) {
+      throw new TypeError("Audio data is undefined or empty.");
+    }
     if (this.audioContext.state === 'suspended') {
       await this.audioContext.resume();
     }
+
     const buffer = this.audioContext.createBuffer(1, data.length, this.audioContext.sampleRate);
     buffer.copyToChannel(data, 0);
 
@@ -21,12 +24,12 @@ export class AudioPlaybackManager {
 
     this.source = this.audioContext.createBufferSource();
     this.source.buffer = buffer;
-    this.source.loop = true; // Enable looping for continuous playback
+    this.source.loop = true; // Continuous looping
     this.source.connect(this.audioContext.destination);
     this.source.start();
 
     if (bubble) {
-        console.log('Audio playback bubbled to connected nodes.');
+      console.log("Audio playback bubbled to connected nodes.");
     }
   }
 

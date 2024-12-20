@@ -6,66 +6,30 @@
     <title>SoniqWave Demo</title>
     <script src="../dist/index.umd.js" defer></script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("SoniqWave library loaded:", SoniqWave);
+  document.addEventListener("DOMContentLoaded", () => {
+    const initializeAudioDriver = async () => {
+      const seed = Math.random() * 1000;
+      const audioDriver = new AudioDriver(seed);
 
-            let audioContext;
-            const initializeAudioContext = async () => {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioContext.state === 'suspended') {
-                    await audioContext.resume();
-                    console.log('AudioContext resumed.');
-                }
-                return audioContext;
-            };
+      const baseFrequency = 440; // A4
+      const harmonics = [1, 2, 3, 4, 5];
+      const amplitudes = [1.2, 0.8, 0.6, 0.4, 0.3];
 
-            const initializeSoniqWave = async () => {
-                try {
-                    // Initialize SoniqWave with a seed
-                    const seed = Math.floor(Math.random() * 1000);
-                    const soniqWave = new SoniqWave.SoniqSound(seed);
-                    const playbackManager = new SoniqWave.AudioPlaybackManager(bubbles = true);
+      document.getElementById("start-demo").addEventListener("click", () => {
+        audioDriver.generateAndPlayNoise("white", 1024, baseFrequency, harmonics, amplitudes);
+        console.log("Audio playback started.");
+      });
 
-                    // Get canvas element for visualization
-                    const canvas = document.getElementById("visualization");
-                    if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
-                        throw new Error("Canvas element not found or invalid.");
-                    }
+      document.getElementById("stop-demo").addEventListener("click", () => {
+        audioDriver.stop();
+        console.log("Audio playback stopped.");
+      });
+    };
 
-                    // Attach user gesture listener
-                    document.getElementById("start-demo").addEventListener('click', async () => {
-                        await initializeAudioContext();
-
-                        // Setup parameters
-                        const baseFrequency = 440; // A4 in Hz
-                        const harmonics = [1, 2, 3, 4, 5]; // Multiples of the base frequency
-                        const amplitudes = [1.5, 1.2, 1.0, 1.8, 1.6]; // Increased amplitudes for louder sound
-
-                        // Generate harmonic wave from background noise
-                        const data = await soniqWave.generateHarmonicWave({
-                            baseFrequency,
-                            harmonics,
-                            amplitudes,
-                            canvas, // Pass canvas to generateHarmonicWave
-                        });
-
-                        playbackManager.play(data, true); // Use playback manager to play in real-time
-
-                        console.log("Harmonic wave generated and played!");
-                    });
-
-                    console.log("Click the button to start AudioContext and demo.");
-                } catch (error) {
-                    console.error("Error initializing SoniqWave:", error);
-                }
-            };
-
-            initializeSoniqWave();
-        });
-    </script>
-</head>
+    initializeAudioDriver();
+  });
+</script>
+</script>
 <body>
     <h1>SoniqWave Demo</h1>
     <button id="start-demo">Start Harmonic Wave</button>
@@ -73,3 +37,4 @@
     <canvas id="visualization" width="800" height="600" style="border: 1px solid black;"></canvas>
 </body>
 </html>
+
