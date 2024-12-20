@@ -1,6 +1,7 @@
 
 export class AudioPlaybackManager {
   private audioContext: AudioContext;
+  private source: AudioBufferSourceNode | null = null;
 
   constructor() {
     this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -10,10 +11,16 @@ export class AudioPlaybackManager {
     const buffer = this.audioContext.createBuffer(1, data.length, this.audioContext.sampleRate);
     buffer.copyToChannel(data, 0);
 
-    const source = this.audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(this.audioContext.destination);
-    source.start();
+    if (this.source) {
+      this.source.stop();
+      this.source.disconnect();
+    }
+
+    this.source = this.audioContext.createBufferSource();
+    this.source.buffer = buffer;
+    this.source.loop = true; // Enable looping for continuous playback
+    this.source.connect(this.audioContext.destination);
+    this.source.start();
 
     if (bubble) {
         console.log('Audio playback bubbled to connected nodes.');
@@ -21,6 +28,10 @@ export class AudioPlaybackManager {
   }
 
   stop(): void {
-    this.audioContext.close();
+    if (this.source) {
+      this.source.stop();
+      this.source.disconnect();
+      this.source = null;
+    }
   }
 }
