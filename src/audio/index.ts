@@ -4,4 +4,3 @@ export { AudioPlaybackManager } from './AudioPlaybackManager';
 export { AudioVisualizer } from './AudioVisualizer';
 export { AudioRecorder } from './AudioRecorder';
 export { AudioProcessor } from './AudioProcessor';
-export {AudioDriver} from './AudioDriver';

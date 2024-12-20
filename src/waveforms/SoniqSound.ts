@@ -19,9 +19,9 @@ export class SoniqSound {
   private amplitudeController: AmplitudeController;
   private frequencyTransformer: FrequencyTransformer;
   private audioPlaybackManager: AudioPlaybackManager;
+  private audioVisualizer: AudioVisualizer;
   private audioMixer: AudioMixer;
   private audioProcessor: AudioProcessor;
-  private audioVisualizer: AudioVisualizer;
   private instruments: { [key: string]: Synthesizer };
 
   constructor(seed: number = Math.random() * 1000) {
@@ -65,9 +65,9 @@ export class SoniqSound {
       audioBuffer.copyToChannel(transformedFrequencies, 0);
       
       // Play audio
-      this.audioPlaybackManager.play(transformedFrequencies);
+      this.audioPlaybackManager.play(transformedFrequencies, transformedFrequencies.length / audioCtx.sampleRate);
 
-      // Visualize audio
+      this.audioPlaybackManager.play(transformedFrequencies, transformedFrequencies.length / audioCtx.sampleRate);
       if (canvas) {
         this.audioVisualizer.visualizeAudio(transformedFrequencies, canvas);
       }
@@ -100,7 +100,7 @@ export class SoniqSound {
         (value, index) => value + harmonicsData[index % harmonicsData.length]
       );
 
-      this.audioPlaybackManager.play(combinedData);
+      this.audioPlaybackManager.play(combinedData, combinedData.length / 44100); // Assuming a sample rate of 44100 Hz
     } catch (error) {
       console.error("Error generating and playing noise:", error);
     }
