@@ -6,14 +6,15 @@ export interface Synthesizer {
     synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array;
 }
 
+// Shared AudioContext
+const sharedAudioContext = new AudioContext();
 
 // Abstract Synthesizer Class
 export abstract class Synthesizer {
-    protected context: AudioContext;
+    protected context: AudioContext = sharedAudioContext;
     protected gainNode: GainNode;
 
     constructor() {
-        this.context = new AudioContext();
         this.gainNode = this.context.createGain();
         this.gainNode.connect(this.context.destination);
 
@@ -84,13 +85,10 @@ export class ConcreteSynthesizer extends Synthesizer {
 
 export class ChordSynthesizer extends Synthesizer {
     private amplitudeController: AmplitudeController = new AmplitudeController();
-    sampleRate: number;
-    private audioContext: AudioContext;
+    private sampleRate: number;
 
     constructor(sampleRate: number = 44100) {
         super();
-        this.sampleRate = sampleRate;
-        this.audioContext = new AudioContext();
         this.sampleRate = sampleRate;
     }
 
@@ -109,7 +107,7 @@ export class ChordSynthesizer extends Synthesizer {
         const envelope = this.amplitudeController.generateAmplitudeEnvelope(length);
         return this.amplitudeController.applyAmplitudeEnvelope(normalizedChord, envelope);
     }
-    
+
     private generateSineWave(frequency: number, length: number): Float32Array {
         const sineWave = new Float32Array(length);
         for (let i = 0; i < length; i++) {
@@ -118,14 +116,12 @@ export class ChordSynthesizer extends Synthesizer {
         return sineWave;
     }
 
-
-
     playAudioBuffer(buffer: Float32Array): void {
-        const audioBuffer = this.audioContext.createBuffer(1, buffer.length, this.sampleRate);
+        const audioBuffer = this.context.createBuffer(1, buffer.length, this.sampleRate);
         audioBuffer.copyToChannel(buffer, 0);
-        const source = this.audioContext.createBufferSource();
+        const source = this.context.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(this.audioContext.destination);
+        source.connect(this.context.destination);
         source.start();
     }
 
@@ -149,4 +145,3 @@ export class ChordSynthesizer extends Synthesizer {
         this.playChord(frequencies, duration);
     }
 }
-
