@@ -20,5 +20,5 @@ console.log('Harmonic Data:', harmonicData);
  */
 export {AmplitudeController} from './AmplitudeController';
 export {FrequencyTransformer} from './FrequencyTransformer';
-export {HarmonicSynthesizer} from './HarmonicSynthesizer';
+export {HarmonicSynthesizer} from './instruments/HarmonicSysthesizer';
 export {ScaleMapper} from './ScaleMapper';
