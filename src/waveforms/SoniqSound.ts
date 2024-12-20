@@ -6,7 +6,8 @@ import { NoiseType } from "../prng/NoiseGenerator";
 import { AmplitudeController, FrequencyTransformer } from "../utils";
 import { SharedAudioContext } from "../utils/";
 
-export let sharedAudioContext: AudioContext = SharedAudioContext.getInstance();
+export let sharedAudioContext: AudioContext;
+sharedAudioContext = SharedAudioContext.getInstance();
 
 export interface HarmonicWaveConfig {
   baseFrequency: number;
@@ -19,13 +20,13 @@ export class SoniqSound {
   private noiseGenerator: NoiseGenerator;
   private harmonicSynthesizer: Synthesizer;
   private amplitudeController: AmplitudeController;
-  private frequencyTransformer: FrequencyTransformer;
-  private audioPlaybackManager: AudioPlaybackManager;
   private audioVisualizer: AudioVisualizer;
   private audioProcessor: AudioProcessor;
   private audioMixer: AudioMixer;
   private instruments: { [key: string]: Synthesizer };
   public sharedAudioContext: AudioContext = sharedAudioContext;
+  frequencyTransformer: FrequencyTransformer;
+  audioPlaybackManager: AudioPlaybackManager;
 
   constructor(seed: number = Math.random() * 1000) {
     this.noiseGenerator = new NoiseGenerator(seed);
