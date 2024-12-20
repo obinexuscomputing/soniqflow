@@ -1,6 +1,7 @@
 {
   "name": "@obinexuscomputing/soniqwave",
   "version": "0.1.0",
+  "type": "module",
   "description": "A TypeScript library for generating harmonic music with noise generation algorithms",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
