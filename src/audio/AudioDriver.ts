@@ -22,4 +22,10 @@ export class AudioDriver {
         const combinedData = noiseArray.map((value, index) => value + harmonicsData[index % harmonicsData.length]);
         this.audioPlaybackManager.play(combinedData);
     }
+
+    stop(): void {
+        this.audioPlaybackManager.stop();
+    }
+
+    
 }
