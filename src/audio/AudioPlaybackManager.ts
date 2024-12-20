@@ -1,43 +1,29 @@
 export class AudioPlaybackManager {
-  private audioContext: AudioContext;
-  private source: AudioBufferSourceNode | null = null;
+  private context: AudioContext;
 
   constructor() {
-    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.context = new AudioContext();
+      this.setupAudioContextResume();
   }
 
-  async play(data: Float32Array, bubble: boolean = true): Promise<void> {
-    if (!data || !data.length) {
-      throw new TypeError("Audio data is undefined or empty.");
-    }
-    if (this.audioContext.state === 'suspended') {
-      await this.audioContext.resume();
-    }
-
-    const buffer = this.audioContext.createBuffer(1, data.length, this.audioContext.sampleRate);
-    buffer.copyToChannel(data, 0);
-
-    if (this.source) {
-      this.source.stop();
-      this.source.disconnect();
-    }
-
-    this.source = this.audioContext.createBufferSource();
-    this.source.buffer = buffer;
-    this.source.loop = true; // Continuous looping
-    this.source.connect(this.audioContext.destination);
-    this.source.start();
-
-    if (bubble) {
-      console.log("Audio playback bubbled to connected nodes.");
-    }
+  private setupAudioContextResume(): void {
+      const resumeContext = () => {
+          if (this.context.state === 'suspended') {
+              this.context.resume();
+          }
+      };
+      document.addEventListener('click', resumeContext);
+      document.addEventListener('keydown', resumeContext);
   }
 
-  stop(): void {
-    if (this.source) {
-      this.source.stop();
-      this.source.disconnect();
-      this.source = null;
-    }
+  public playBuffer(buffer: Float32Array, duration: number): void {
+      const audioBuffer = this.context.createBuffer(1, buffer.length, this.context.sampleRate);
+      audioBuffer.copyToChannel(buffer, 0);
+
+      const bufferSource = this.context.createBufferSource();
+      bufferSource.buffer = audioBuffer;
+      bufferSource.connect(this.context.destination);
+      bufferSource.start();
+      bufferSource.stop(this.context.currentTime + duration);
   }
 }
