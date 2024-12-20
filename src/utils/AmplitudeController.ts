@@ -33,4 +33,22 @@ export class AmplitudeController {
         }
         return buffer;
     }
+
+    applyGain(buffer: Float32Array, gain: number): Float32Array {
+        for (let i = 0; i < buffer.length; i++) {
+            buffer[i] *= gain;
+        }
+        return buffer;
+    }
+
+    applyGainEnvelope(buffer: Float32Array, envelope: Float32Array, gain: number): Float32Array {
+        for (let i = 0; i < buffer.length; i++) {
+            buffer[i] *= envelope[i] * gain;
+        }
+        return buffer;
+    }
+
+    controlAmplitude(buffer: Float32Array, envelope: Float32Array, gain: number): Float32Array {
+        return this.applyGainEnvelope(this.applyAmplitudeEnvelope(buffer, envelope), envelope, gain);
+    }
 }
