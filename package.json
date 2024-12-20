@@ -3,10 +3,21 @@
   "version": "0.1.0",
   "type": "module",
   "description": "A TypeScript library for generating harmonic music with noise generation algorithms",
-  "main": "dist/index.cjs.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "browser": "dist/index.umd.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://www.buymeacoffee.com/obinexuscomputing"
+  },
   "files": [
     "dist",
     "README.md",
