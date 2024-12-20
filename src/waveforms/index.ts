@@ -1,1 +1,1 @@
-export {SoniqWave} from './SoniqWave';
+export {SoniqSound} from './SoniqSound';
