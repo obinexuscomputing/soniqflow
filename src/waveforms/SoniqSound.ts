@@ -20,8 +20,8 @@ export class SoniqSound {
   private frequencyTransformer: FrequencyTransformer;
   private audioPlaybackManager: AudioPlaybackManager;
   private audioVisualizer: AudioVisualizer;
-  private audioMixer: AudioMixer;
   private audioProcessor: AudioProcessor;
+  private audioMixer: AudioMixer;
   private instruments: { [key: string]: Synthesizer };
 
   constructor(seed: number = Math.random() * 1000) {
@@ -63,8 +63,8 @@ export class SoniqSound {
 
       // Audio context setup
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const audioBuffer = audioCtx.createBuffer(1, transformedFrequencies.length, audioCtx.sampleRate);
-      audioBuffer.copyToChannel(transformedFrequencies, 0);
+      // Audio context setup
+      await audioCtx.resume();
       
       // Play audio
       this.audioPlaybackManager.play(transformedFrequencies, transformedFrequencies.length / audioCtx.sampleRate);
