@@ -21,30 +21,39 @@
                         throw new Error("Canvas element not found or invalid.");
                     }
 
-                    // Setup parameters
-                    const baseFrequency = 440; // A4 in Hz
-                    const harmonics = [1, 2, 3, 4, 5]; // Multiples of the base frequency
-                    const amplitudes = [1.5, 1.2, 1.0, 1.8, 1.6]; // Increased amplitudes for louder sound
+                    // Request user gesture to start AudioContext
+                    document.body.addEventListener('click', async () => {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        if (audioContext.state === 'suspended') {
+                            await audioContext.resume();
+                            console.log('AudioContext resumed.');
+                        }
 
-                    // Generate harmonic wave from background noise
-                    await soniqWave.generateHarmonicWave({
-                        baseFrequency,
-                        harmonics,
-                        amplitudes,
-                        canvas, // Pass canvas to generateHarmonicWave
+                        // Setup parameters
+                        const baseFrequency = 440; // A4 in Hz
+                        const harmonics = [1, 2, 3, 4, 5]; // Multiples of the base frequency
+                        const amplitudes = [1.5, 1.2, 1.0, 1.8, 1.6]; // Increased amplitudes for louder sound
+
+                        // Generate harmonic wave from background noise
+                        await soniqWave.generateHarmonicWave({
+                            baseFrequency,
+                            harmonics,
+                            amplitudes,
+                            canvas, // Pass canvas to generateHarmonicWave
+                        });
+
+                        // Create an oscillator to test sound output
+                        const oscillator = audioContext.createOscillator();
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(baseFrequency, audioContext.currentTime); // Set frequency to baseFrequency
+
+                        // Connect oscillator to the audio context's destination (speakers)
+                        oscillator.connect(audioContext.destination);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 2); // Play sound for 2 seconds
                     });
 
-                    // Create an audio context
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const oscillator = audioContext.createOscillator();
-                    oscillator.type = 'sine';
-                    oscillator.frequency.setValueAtTime(baseFrequency, audioContext.currentTime); // Set frequency to baseFrequency
-
-                    // Connect oscillator to the audio context's destination (speakers)
-                    oscillator.connect(audioContext.destination);
-                    oscillator.start();
-                    oscillator.stop(audioContext.currentTime + 2); // Play sound for 2 seconds
-
+                    console.log("Click anywhere on the page to resume AudioContext and start the demo.");
                 } catch (error) {
                     console.error("Error initializing SoniqWave:", error);
                 }
@@ -55,6 +64,8 @@
     </script>
 </head>
 <body>
-    <canvas id="visualization" width="800" height="600"></canvas>
+    <h1>SoniqWave Demo</h1>
+    <p>Click anywhere on the page to resume AudioContext and start the demo.</p>
+    <canvas id="visualization" width="800" height="600" style="border: 1px solid black;"></canvas>
 </body>
 </html>
