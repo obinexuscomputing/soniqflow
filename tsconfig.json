@@ -6,6 +6,7 @@
       "declarationDir": "./dist",
       "outDir": "./dist",
       "strict": true,
+      "lib": ["ESNext", "DOM"],
       "moduleResolution": "Node",
       "esModuleInterop": true,
       "skipLibCheck": true,
