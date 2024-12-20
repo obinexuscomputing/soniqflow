@@ -30,4 +30,20 @@ export class FluteSynthesizer extends Synthesizer {
         const envelope = this.amplitudeController.generateAmplitudeEnvelope(length);
         return this.amplitudeController.applyAmplitudeEnvelope(normalizedFlute, envelope);
     }
+
+    public play(frequency: number, duration: number): void {
+        const buffer = this.synthesize([frequency], duration);
+        const audioBuffer = this.context.createBuffer(1, buffer.length, this.sampleRate);
+        audioBuffer.copyToChannel(buffer, 0);
+
+        const bufferSource = this.context.createBufferSource();
+        bufferSource.buffer = audioBuffer;
+        bufferSource.connect(this.gainNode);
+        bufferSource.start();
+        bufferSource.stop(this.context.currentTime + duration);
+    }
+
+    public setVolume(volume: number): void {
+        this.gainNode.gain.setValueAtTime(volume, this.context.currentTime);
+    }
 }
