@@ -5,12 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SoniqSound Demo</title>
     <script src="../dist/index.umd.js" defer></script>
-<script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const seed = 12345;
-            const soniq = new SoniqWave.SoniqSound(seed);
+    <script>
+        let soniq;
 
-            // Set up buttons
+        document.addEventListener("DOMContentLoaded", () => {
+            const setupButton = document.getElementById("setup-audio");
+            const buttons = document.querySelectorAll(".action-button");
+
+            setupButton.addEventListener("click", () => {
+                const seed = 12345;
+                soniq = new SoniqWave.SoniqSound(seed);
+
+                // Resume AudioContext explicitly
+                SoniqWave.sharedAudioContext.resume().then(() => {
+                    console.log("AudioContext resumed successfully.");
+                    setupButton.disabled = true;
+                    buttons.forEach(button => button.disabled = false);
+                }).catch(error => {
+                    console.error("Error resuming AudioContext:", error);
+                });
+            });
+
+            // Set up action buttons
             document.getElementById("play-harmonic").addEventListener("click", () => {
                 soniq.playHarmonicWave({
                     baseFrequency: 440,
@@ -31,15 +47,19 @@
             document.getElementById("stop-all").addEventListener("click", () => {
                 soniq.stopAll();
             });
+
+            // Initially disable action buttons until AudioContext is resumed
+            buttons.forEach(button => button.disabled = true);
         });
     </script>
 </head>
 <body>
     <h1>SoniqSound Demo</h1>
-    <button id="play-harmonic">Play Harmonic Wave</button>
-    <button id="play-instrument">Play Instrument</button>
-    <button id="play-noise">Play Noise</button>
-    <button id="stop-all">Stop All Playback</button>
+    <button id="setup-audio">Setup Audio</button>
+    <button id="play-harmonic" class="action-button">Play Harmonic Wave</button>
+    <button id="play-instrument" class="action-button">Play Instrument</button>
+    <button id="play-noise" class="action-button">Play Noise</button>
+    <button id="stop-all" class="action-button">Stop All Playback</button>
 
     <p>Harmonic wave visualization:</p>
     <canvas id="visualization" width="800" height="400" style="border: 1px solid black;"></canvas>
