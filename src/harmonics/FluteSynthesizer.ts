@@ -1,17 +1,16 @@
 import { AmplitudeController } from '../utils';
-import { Synthesizer } from './synthesizer';
+import { BaseSynthesizer } from './Synthesizer';
 
-export class FluteSynthesizer extends Synthesizer {
-    private amplitudeController: AmplitudeController;
-    private context: AudioContext;
-    private gainNode: GainNode;
+export class FluteSynthesizer extends BaseSynthesizer {
+    private amplitudeController: AmplitudeController = new AmplitudeController();
+    protected context: AudioContext;
+    protected gainNode: GainNode;
 
     constructor() {
+        super();
         this.context = new AudioContext();
         this.gainNode = this.context.createGain();
-        this.gainNode = this.context.createGain();
         this.gainNode.connect(this.context.destination);
-    }
     }
 
     public synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array {
