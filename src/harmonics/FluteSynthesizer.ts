@@ -1,44 +1,40 @@
-export class FluteSynthesizer extends BaseSynthesizer {
+import { AmplitudeController } from '../utils';
+import { Synthesizer } from './synthesizer';
+
+export class FluteSynthesizer extends Synthesizer {
     private amplitudeController: AmplitudeController;
-    private sampleRate: number = 44100;
 
     constructor() {
         super();
         this.amplitudeController = new AmplitudeController();
     }
 
-    public synthesize(frequencies: number[], duration: number): Float32Array {
-        if (frequencies.length !== 1) {
-            throw new Error("FluteSynthesizer only supports single frequency tones.");
+    public synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array {
+        const sampleRate = this.context.sampleRate;
+        const bufferLength = sampleRate; // 1 second buffer
+        const buffer = this.context.createBuffer(1, bufferLength, sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferLength; i++) {
+            let sample = 0;
+            const time = i / sampleRate;
+
+            for (let j = 0; j < harmonics.length; j++) {
+                sample += amplitudes[j] * Math.sin(2 * Math.PI * harmonics[j] * baseFrequency * time);
+            }
+
+            data[i] = this.amplitudeController.apply(sample);
         }
 
-        const frequency = frequencies[0];
-        const length = Math.floor(this.sampleRate * duration);
-        const fluteData = new Float32Array(length);
-
-        for (let i = 0; i < length; i++) {
-            const t = i / this.sampleRate;
-            fluteData[i] = Math.sin(2 * Math.PI * frequency * t) * Math.exp(-t * 5);
-        }
-
-        const normalizedFlute = this.amplitudeController.normalizeAmplitudes(fluteData);
-        const envelope = this.amplitudeController.generateAmplitudeEnvelope(length);
-        return this.amplitudeController.applyAmplitudeEnvelope(normalizedFlute, envelope);
+        return data;
     }
 
     public play(frequency: number, duration: number): void {
-        const buffer = this.synthesize([frequency], duration);
-        const audioBuffer = this.context.createBuffer(1, buffer.length, this.sampleRate);
-        audioBuffer.copyToChannel(buffer, 0);
-
+        const buffer = this.synthesizeHarmonics(frequency, [1, 2, 3], [1, 0.5, 0.25]);
         const bufferSource = this.context.createBufferSource();
-        bufferSource.buffer = audioBuffer;
+        bufferSource.buffer = this.context.createBuffer(1, buffer.length, this.context.sampleRate);
         bufferSource.connect(this.gainNode);
-        bufferSource.start();
+        bufferSource.start(this.context.currentTime);
         bufferSource.stop(this.context.currentTime + duration);
-    }
-
-    public setVolume(volume: number): void {
-        this.gainNode.gain.setValueAtTime(volume, this.context.currentTime);
     }
 }
