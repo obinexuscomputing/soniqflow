@@ -1,7 +1,5 @@
 export class FrequencyTransformer {
-    transformFrequencies(synthesizedNoise: Float32Array<ArrayBufferLike> | Generator<number, void, unknown>) {
-        throw new Error('Method not implemented.');
-    }
+ 
     applyFrequencyRange(data: Float32Array, range: [number, number]): Float32Array {
       const [min, max] = range;
       return data.map(value => value * (max - min) + min);
