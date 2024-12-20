@@ -9,7 +9,7 @@ export interface Synthesizer {
 
 // Abstract Synthesizer Class
 export abstract class Synthesizer {
-    protected context: AudioContext = sharedAudioContext;
+    protected context: AudioContext = new AudioContext();
     protected gainNode: GainNode;
 
     constructor() {

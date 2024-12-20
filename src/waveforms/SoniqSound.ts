@@ -5,7 +5,16 @@ import { NoiseGenerator } from "../prng";
 import { NoiseType } from "../prng/NoiseGenerator";
 import { AmplitudeController, FrequencyTransformer } from "../utils";
 
-export const sharedAudioContext = new AudioContext();
+export let sharedAudioContext: AudioContext;
+
+document.addEventListener('click', () => {
+  if (!sharedAudioContext) {
+    sharedAudioContext = new AudioContext();
+  }
+  if (sharedAudioContext.state === 'suspended') {
+    sharedAudioContext.resume();
+  }
+});
 
 export interface HarmonicWaveConfig {
   baseFrequency: number;
@@ -13,8 +22,6 @@ export interface HarmonicWaveConfig {
   amplitudes: number[];
   canvas?: HTMLCanvasElement;
 }
-// Shared AudioContext
-
 export class SoniqSound {
   private noiseGenerator: NoiseGenerator;
   private harmonicSynthesizer: Synthesizer;
@@ -25,6 +32,7 @@ export class SoniqSound {
   private audioProcessor: AudioProcessor;
   private audioMixer: AudioMixer;
   private instruments: { [key: string]: Synthesizer };
+  public sharedAudioContext: AudioContext = sharedAudioContext;
 
   constructor(seed: number = Math.random() * 1000) {
     this.noiseGenerator = new NoiseGenerator(seed);
