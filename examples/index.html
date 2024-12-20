@@ -13,21 +13,32 @@
             const buttons = document.querySelectorAll(".action-button");
 
             setupButton.addEventListener("click", () => {
-                const seed = 12345;
-                soniq = new SoniqWave.SoniqSound(seed);
+                try {
+                    const seed = 12345;
+                    soniq = new SoniqWave.SoniqSound(seed);
 
-                // Resume AudioContext explicitly
-                SoniqWave.sharedAudioContext.resume().then(() => {
-                    console.log("AudioContext resumed successfully.");
-                    setupButton.disabled = true;
-                    buttons.forEach(button => button.disabled = false);
-                }).catch(error => {
-                    console.error("Error resuming AudioContext:", error);
-                });
+                    SoniqWave.sharedAudioContext.resume().then(() => {
+                        console.log("AudioContext resumed successfully.");
+                        setupButton.disabled = true;
+                        buttons.forEach(button => button.disabled = false);
+                    }).catch(error => {
+                        console.error("Error resuming AudioContext:", error);
+                    });
+                } catch (error) {
+                    console.error("Error setting up SoniqSound:", error);
+                }
             });
 
-            // Set up action buttons
+            const checkSoniqInitialized = () => {
+                if (!soniq) {
+                    console.error("SoniqSound is not initialized. Please click 'Setup Audio' first.");
+                    return false;
+                }
+                return true;
+            };
+
             document.getElementById("play-harmonic").addEventListener("click", () => {
+                if (!checkSoniqInitialized()) return;
                 soniq.playHarmonicWave({
                     baseFrequency: 440,
                     harmonics: [1, 2, 3, 4],
@@ -37,18 +48,20 @@
             });
 
             document.getElementById("play-instrument").addEventListener("click", () => {
-                soniq.playInstrument("piano", 440, 2.5); // Play A4 for 2.5 seconds
+                if (!checkSoniqInitialized()) return;
+                soniq.playInstrument("piano", 440, 2.5);
             });
 
             document.getElementById("play-noise").addEventListener("click", () => {
+                if (!checkSoniqInitialized()) return;
                 soniq.generateAndPlayNoise("white", 1024, 440, [1, 2], [1, 0.5]);
             });
 
             document.getElementById("stop-all").addEventListener("click", () => {
+                if (!checkSoniqInitialized()) return;
                 soniq.stopAll();
             });
 
-            // Initially disable action buttons until AudioContext is resumed
             buttons.forEach(button => button.disabled = true);
         });
     </script>
@@ -59,9 +72,3 @@
     <button id="play-harmonic" class="action-button">Play Harmonic Wave</button>
     <button id="play-instrument" class="action-button">Play Instrument</button>
     <button id="play-noise" class="action-button">Play Noise</button>
-    <button id="stop-all" class="action-button">Stop All Playback</button>
-
-    <p>Harmonic wave visualization:</p>
-    <canvas id="visualization" width="800" height="400" style="border: 1px solid black;"></canvas>
-</body>
-</html>
