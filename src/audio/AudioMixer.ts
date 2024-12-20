@@ -1,4 +1,7 @@
 export class AudioMixer {
+    mixAudio(harmonics: Float32Array<ArrayBufferLike>) {
+        throw new Error('Method not implemented.');
+    }
     mixTracks(tracks: Float32Array[]): Float32Array {
       const maxLength = Math.max(...tracks.map(track => track.length));
       const mixed = new Float32Array(maxLength);

@@ -1,4 +1,7 @@
 export class AmplitudeController {
+    controlAmplitude(transformedFrequencies: any) {
+        throw new Error('Method not implemented.');
+    }
     normalizeAmplitudes(data: Float32Array): Float32Array {
       const maxAmplitude = Math.max(...data.map(Math.abs));
       return maxAmplitude === 0 ? data : data.map(value => value / maxAmplitude);

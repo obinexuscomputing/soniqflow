@@ -122,5 +122,6 @@ export class NoiseGenerator {
             yield Math.random() * 2 - 1; // Generates a value between -1 and 1
         }
     }
-}
 
+    
+}

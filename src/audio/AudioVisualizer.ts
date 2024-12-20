@@ -1,4 +1,7 @@
 export class AudioVisualizer {
+    visualizeAudio(processedAudio: any) {
+        throw new Error('Method not implemented.');
+    }
     visualizeWaveform(data: Float32Array, canvas: HTMLCanvasElement): void {
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas context is not available');
@@ -97,6 +100,6 @@ export class AudioVisualizer {
     visualize(data: Float32Array, canvas: HTMLCanvasElement): void {
       this.visualizeWaveform(data, canvas);
     }
-    
+
   }
   

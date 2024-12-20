@@ -51,5 +51,7 @@ export class NoiseGeneratorSynthesizer {
                 throw new Error(`Unknown noise type: ${type}`);
         }
     }
+
+    
 }
 

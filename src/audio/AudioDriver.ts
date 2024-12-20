@@ -5,6 +5,9 @@ import { AudioPlaybackManager } from "./AudioPlaybackManager";
 
 
 export class AudioDriver {
+    playAudio(processedAudio: any) {
+        throw new Error('Method not implemented.');
+    }
     private noiseGenerator: NoiseGenerator;
     private harmonicSynthesizer: HarmonicSynthesizer;
     private audioPlaybackManager: AudioPlaybackManager;
