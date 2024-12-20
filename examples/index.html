@@ -15,6 +15,12 @@
                     const seed = Math.floor(Math.random() * 1000);
                     const soniqWave = new SoniqWave.SoniqWave(seed);
 
+                    // Get canvas element for visualization
+                    const canvas = document.getElementById("visualization");
+                    if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
+                        throw new Error("Canvas element not found or invalid.");
+                    }
+
                     // Setup parameters
                     const baseFrequency = 440; // A4 in Hz
                     const harmonics = [1, 2, 3, 4, 5]; // Multiples of the base frequency
@@ -25,17 +31,8 @@
                         baseFrequency,
                         harmonics,
                         amplitudes,
+                        canvas, // Pass canvas to generateHarmonicWave
                     });
-
-                    // Visualization Example
-                    const canvas = document.getElementById("visualization") ;
-                    if (canvas) {
-                        const visualizer = new SoniqWave.AudioVisualizer();
-
-                        // Generate example waveform data
-                        const waveformData = new Float32Array(1024).map(() => Math.random() * 2 - 1);
-                        visualizer.visualizeWaveform(waveformData, canvas);
-                    }
 
                     console.log("Harmonic wave generated and played!");
                 } catch (error) {
