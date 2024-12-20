@@ -1,10 +1,11 @@
+import { BaseSynthesizer } from "./Synthesizer";
 
 
 export class DrumSynthesizer extends BaseSynthesizer {
     public play(frequency: number, duration: number): void {
         this.playKick(frequency, duration);
     }
-
+    
     public playKick(frequency: number = 150, duration: number = 0.5): void {
         const oscillator = this.context.createOscillator();
         oscillator.type = "sine";
