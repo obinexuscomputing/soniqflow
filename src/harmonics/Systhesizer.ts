@@ -23,3 +23,17 @@ export abstract class Synthesizer {
       return buffer;
   }
 }
+
+export class ConcreteSynthesizer extends Synthesizer {
+    public play(frequency: number, duration: number): void {
+            const buffer = this.generateSineWaveBuffer(frequency, duration);
+            const audioBuffer = this.context.createBuffer(1, buffer.length, this.context.sampleRate);
+            audioBuffer.copyToChannel(buffer, 0);
+
+            const bufferSource = this.context.createBufferSource();
+            bufferSource.buffer = audioBuffer;
+            bufferSource.connect(this.gainNode);
+            bufferSource.start();
+            bufferSource.stop(this.context.currentTime + duration);
+    }
+}

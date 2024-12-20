@@ -1,4 +1,5 @@
-import { Synthesizer } from "./Systhesizer";
+
+import { Synthesizer } from "./Synthesizer";
 
 export class DrumSynthesizer extends Synthesizer {
     play(frequency: number, duration: number): void {

@@ -1,7 +1,8 @@
+import { Synthesizer } from "./Systhesizer";
 
 export class PianoSynthesizer extends Synthesizer {
     context: any;
-    gainNode: GainNode;
+    gainNode: GainNode = this.context.createGain();
 
     public play(frequency: number, duration: number): void {
         const oscillator = this.context.createOscillator();

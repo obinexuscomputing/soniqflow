@@ -1,9 +1,11 @@
-import { Synthesizer } from "./Synthesizer";
-import { AmplitudeController } from "../../utils/AmplitudeController";
+
+
+import { AmplitudeController } from '../utils';
+import { Synthesizer } from './synthesizer';
 
 export class FluteSynthesizer extends Synthesizer {
     private amplitudeController: AmplitudeController;
-    private sampleRate: number;
+    private sampleRate: number = 44100;
 
     constructor(sampleRate: number = 44100) {
         super(sampleRate);
