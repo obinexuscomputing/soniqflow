@@ -1,6 +1,6 @@
 import { AudioPlaybackManager, AudioMixer, AudioProcessor, AudioVisualizer } from "../audio";
 import { ViolinSynthesizer, PianoSynthesizer, GuitarSynthesizer, DrumSynthesizer, FluteSynthesizer } from "../harmonics";
-import { Synthesizer, ConcreteSynthesizer } from "../harmonics/Systhesizer";
+import { Synthesizer, ConcreteSynthesizer } from "../harmonics/Synthesizer";
 import { NoiseGenerator } from "../prng";
 import { NoiseType } from "../prng/NoiseGenerator";
 import { AmplitudeController, FrequencyTransformer } from "../utils";

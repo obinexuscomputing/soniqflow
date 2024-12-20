@@ -1,4 +1,4 @@
-import { Synthesizer } from "./Systhesizer";
+import { Synthesizer } from "./Synthesizer";
 
 export class ViolinSynthesizer extends Synthesizer {
     private oscillator: OscillatorNode;
