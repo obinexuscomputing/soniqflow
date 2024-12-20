@@ -1,4 +1,3 @@
-import { AmplitudeController } from "../utils";
 
 // Synthesizer Interface
 export interface Synthesizer {
@@ -9,11 +8,15 @@ export interface Synthesizer {
 
 // Abstract Synthesizer Class
 export abstract class Synthesizer {
-    protected context: AudioContext = new AudioContext();
     protected gainNode: GainNode;
+    protected context = sharedAudioContext;
 
     constructor() {
-        this.gainNode = this.context.createGain();
+        if (this.context) {
+            this.gainNode = this.context.createGain();
+        } else {
+            throw new Error("Audio context is not available.");
+        }
         this.gainNode.connect(this.context.destination);
 
         // Ensure AudioContext resumes on user gesture
@@ -31,7 +34,9 @@ export abstract class Synthesizer {
     }
 
     public setVolume(volume: number): void {
-        this.gainNode.gain.setValueAtTime(volume, this.context.currentTime);
+        if (this.gainNode) {
+            this.gainNode.gain.setValueAtTime(volume, this.context.currentTime);
+        }
     }
 
     protected generateSineWaveBuffer(frequency: number, duration: number): Float32Array {
