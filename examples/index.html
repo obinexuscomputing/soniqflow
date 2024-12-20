@@ -9,6 +9,18 @@
         document.addEventListener("DOMContentLoaded", () => {
             console.log("SoniqWave library loaded:", SoniqWave);
 
+            let audioContext;
+            const initializeAudioContext = async () => {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                    console.log('AudioContext resumed.');
+                }
+                return audioContext;
+            };
+
             const initializeSoniqWave = async () => {
                 try {
                     // Initialize SoniqWave with a seed
@@ -21,13 +33,9 @@
                         throw new Error("Canvas element not found or invalid.");
                     }
 
-                    // Request user gesture to start AudioContext
-                    document.body.addEventListener('click', async () => {
-                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        if (audioContext.state === 'suspended') {
-                            await audioContext.resume();
-                            console.log('AudioContext resumed.');
-                        }
+                    // Attach user gesture listener
+                    document.getElementById("start-demo").addEventListener('click', async () => {
+                        await initializeAudioContext();
 
                         // Setup parameters
                         const baseFrequency = 440; // A4 in Hz
@@ -42,18 +50,10 @@
                             canvas, // Pass canvas to generateHarmonicWave
                         });
 
-                        // Create an oscillator to test sound output
-                        const oscillator = audioContext.createOscillator();
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(baseFrequency, audioContext.currentTime); // Set frequency to baseFrequency
-
-                        // Connect oscillator to the audio context's destination (speakers)
-                        oscillator.connect(audioContext.destination);
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 2); // Play sound for 2 seconds
+                        console.log("Harmonic wave generated and played!");
                     });
 
-                    console.log("Click anywhere on the page to resume AudioContext and start the demo.");
+                    console.log("Click the button to start AudioContext and demo.");
                 } catch (error) {
                     console.error("Error initializing SoniqWave:", error);
                 }
@@ -65,7 +65,8 @@
 </head>
 <body>
     <h1>SoniqWave Demo</h1>
-    <p>Click anywhere on the page to resume AudioContext and start the demo.</p>
+    <button id="start-demo">Start Harmonic Wave</button>
+    <p>Click the button above to resume AudioContext and start the demo.</p>
     <canvas id="visualization" width="800" height="600" style="border: 1px solid black;"></canvas>
 </body>
 </html>
