@@ -1,4 +1,3 @@
-export { ChordSynthesizer } from "./ChordSynthesizer";
 export { PianoSynthesizer } from "./PianoSynthesizer";
 export { DrumSynthesizer } from "./DrumSynthesizer";
 export { GuitarSynthesizer } from "./GuitarSynthesizer";
