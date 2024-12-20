@@ -1,9 +1,10 @@
 
 // AmplitudeController Class
 export class AmplitudeController {
-    apply(sample: number): any {
-        throw new Error('Method not implemented.');
+    apply(sample: number): number {
+        return sample;
     }
+
     normalizeAmplitudes(buffer: Float32Array): Float32Array {
         const maxAmplitude = Math.max(...buffer.map(Math.abs));
         if (maxAmplitude > 0) {
