@@ -10,6 +10,11 @@
   <h1>SoniqWave Audio Synthesis</h1>
   <button id="playWave">Play Harmonic Wave</button>
   <button id="stopWave">Stop Audio</button>
+  <button id="playPiano">Play Piano</button>
+  <button id="playDrum">Play Drum</button>
+  <button id="playFlute">Play Flute</button>
+  <button id="playGuitar">Play Guitar</button>
+  <button id="playViolin">Play Violin</button>
   <canvas id="visualizer" width="800" height="400" style="border:1px solid #000;"></canvas>
 
   <script type="module">
@@ -35,6 +40,46 @@
         soniqSound.stopAll();
       } catch (error) {
         console.error('Error stopping audio:', error);
+      }
+    });
+
+    document.getElementById('playPiano').addEventListener('click', () => {
+      try {
+        soniqSound.playInstrument('piano', 440, 2);
+      } catch (error) {
+        console.error('Error playing piano:', error);
+      }
+    });
+
+    document.getElementById('playDrum').addEventListener('click', () => {
+      try {
+        soniqSound.playInstrument('drum', 150, 0.5);
+      } catch (error) {
+        console.error('Error playing drum:', error);
+      }
+    });
+
+    document.getElementById('playFlute').addEventListener('click', () => {
+      try {
+        soniqSound.playInstrument('flute', 440, 2);
+      } catch (error) {
+        console.error('Error playing flute:', error);
+      }
+    });
+
+    document.getElementById('playGuitar').addEventListener('click', () => {
+      try {
+        soniqSound.playInstrument('guitar', 440, 2);
+      } catch (error) {
+        console.error('Error playing guitar:', error);
+      }
+    });
+
+    document.getElementById('playViolin').addEventListener('click', () => {
+      try {
+        soniqSound.playInstrument('violin', 440, 2);
+      } catch (error) {
+        console.error('Error playing violin:', error);
       }
     });
   </script>
