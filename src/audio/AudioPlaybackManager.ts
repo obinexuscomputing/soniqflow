@@ -1,8 +1,9 @@
-import { SharedAudioContext } from "../utils";
+import { SharedAudioContext } from "../utils/SharedAudioContext";
 
 export class AudioPlaybackManager {
     private context: AudioContext;
     private gainNode: GainNode;
+    private currentSource: AudioBufferSourceNode | null = null;
 
     constructor() {
         this.context = SharedAudioContext.getInstance();
@@ -10,16 +11,29 @@ export class AudioPlaybackManager {
         this.gainNode.connect(this.context.destination);
     }
 
-    public playBuffer(audioBuffer: AudioBuffer, startTime: number = 0, duration?: number): void {
+    public play(data: Float32Array, duration: number): void {
+        if (this.currentSource) {
+            this.stop();
+        }
+
+        // Convert Float32Array to AudioBuffer
+        const audioBuffer = this.context.createBuffer(1, data.length, this.context.sampleRate);
+        audioBuffer.copyToChannel(data, 0);
+
         const bufferSource = this.context.createBufferSource();
         bufferSource.buffer = audioBuffer;
         bufferSource.connect(this.gainNode);
+        bufferSource.start(this.context.currentTime);
+        bufferSource.stop(this.context.currentTime + duration);
 
-        if (duration) {
-            bufferSource.start(this.context.currentTime + startTime);
-            bufferSource.stop(this.context.currentTime + startTime + duration);
-        } else {
-            bufferSource.start(this.context.currentTime + startTime);
+        this.currentSource = bufferSource;
+    }
+
+    public stop(): void {
+        if (this.currentSource) {
+            this.currentSource.stop();
+            this.currentSource.disconnect();
+            this.currentSource = null;
         }
     }
 
