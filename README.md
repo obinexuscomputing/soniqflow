@@ -6,6 +6,7 @@ SoniqWave is a powerful JavaScript library designed to generate and visualize ha
 
 - Generate harmonic waves based on a base frequency and its harmonics.
 - Visualize the generated waves on an HTML canvas.
+- Play instrument simulations including piano, drum, flute, guitar, and violin.
 - Interactive demo to play and visualize harmonic music.
 
 ## Installation
@@ -27,58 +28,34 @@ Here's a basic example of how to use SoniqWave to generate and visualize harmoni
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SoniqWave Demo</title>
+    <link rel="stylesheet" href="main.css">
     <script src="../dist/index.umd.js" defer></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             console.log("SoniqWave library loaded:", SoniqWave);
 
-            const initializeSoniqWave = async () => {
-                try {
-                    // Initialize SoniqWave with a seed
-                    const seed = Math.floor(Math.random() * 1000);
-                    const soniqWave = new SoniqWave.SoniqSound(seed);
+            const soniqSound = new SoniqWave.SoniqSound();
 
-                    // Get canvas element for visualization
-                    const canvas = document.getElementById("visualization");
-                    if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
-                        throw new Error("Canvas element not found or invalid.");
-                    }
+            document.getElementById('playWave').addEventListener('click', async () => {
+                await soniqSound.playHarmonicWave({
+                    baseFrequency: 440,
+                    harmonics: [1, 2, 3],
+                    amplitudes: [1, 0.5, 0.25],
+                    canvas: document.getElementById('visualizer')
+                });
+            });
 
-                    // Setup parameters
-                    const baseFrequency = 440; // A4 in Hz
-                    const harmonics = [1, 2, 3, 4, 5]; // Multiples of the base frequency
-                    const amplitudes = [1.5, 1.2, 1.0, 1.8, 1.6]; // Increased amplitudes for louder sound
-
-                    // Generate harmonic wave from background noise
-                    await soniqWave.generateHarmonicWave({
-                        baseFrequency,
-                        harmonics,
-                        amplitudes,
-                        canvas, // Pass canvas to generateHarmonicWave
-                    });
-
-                    // Create an audio context
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const oscillator = audioContext.createOscillator();
-                    oscillator.type = 'sine';
-                    oscillator.frequency.setValueAtTime(baseFrequency, audioContext.currentTime); // Set frequency to baseFrequency
-
-                    // Connect oscillator to the audio context's destination (speakers)
-                    oscillator.connect(audioContext.destination);
-                    oscillator.start();
-                    oscillator.stop(audioContext.currentTime + 2); // Play sound for 2 seconds
-
-                } catch (error) {
-                    console.error("Error initializing SoniqWave:", error);
-                }
-            };
-
-            initializeSoniqWave();
+            document.getElementById('stopWave').addEventListener('click', () => {
+                soniqSound.stopAll();
+            });
         });
     </script>
 </head>
 <body>
-    <canvas id="visualization" width="800" height="600"></canvas>
+    <h1>SoniqWave Audio Synthesis</h1>
+    <button id="playWave">Play Harmonic Wave</button>
+    <button id="stopWave">Stop Audio</button>
+    <canvas id="visualizer" width="800" height="400"></canvas>
 </body>
 </html>
 ```
@@ -91,15 +68,33 @@ Creates a new instance of SoniqSound.
 
 - `seed`: A number used to initialize the random number generator.
 
-### `generateHarmonicWave(options)`
+### `playHarmonicWave(options)`
 
-Generates and visualizes a harmonic wave.
+Plays and visualizes a harmonic wave.
 
 - `options`: An object containing the following properties:
   - `baseFrequency`: The base frequency in Hz.
   - `harmonics`: An array of harmonic multipliers.
   - `amplitudes`: An array of amplitudes corresponding to each harmonic.
   - `canvas`: The HTML canvas element where the wave will be visualized.
+
+### `playInstrument(instrument, frequency, duration)`
+
+Plays a specified instrument.
+
+- `instrument`: A string representing the instrument name (e.g., "piano", "drum").
+- `frequency`: The frequency of the sound in Hz.
+- `duration`: The duration of the sound in seconds.
+
+### `stopAll()`
+
+Stops all currently playing audio.
+
+## Current Development
+
+- Improving the audio synthesis logic to make instruments sound more realistic.
+- Adding advanced wave visualization features.
+- Enhancing the API for more flexibility and ease of use.
 
 ## License
 
