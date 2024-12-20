@@ -1,3 +1,9 @@
+export interface Synthesizer {
+    play(frequency: number, duration: number): void;
+    synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array;
+  }
+
+  
 export abstract class Synthesizer {
   protected context: AudioContext;
   protected gainNode: GainNode;
