@@ -1,4 +1,3 @@
-
 // Synthesizer Interface
 export interface Synthesizer {
     play(frequency: number, duration: number): void;
@@ -7,46 +6,17 @@ export interface Synthesizer {
 
 
 // Abstract Synthesizer Class
-export abstract class Synthesizer {
+export abstract class BaseSynthesizer implements Synthesizer {
+    protected context: AudioContext;
     protected gainNode: GainNode;
-    protected context = sharedAudioContext;
 
     constructor() {
-        if (this.context) {
-            this.gainNode = this.context.createGain();
-        } else {
-            throw new Error("Audio context is not available.");
-        }
+        this.context = SharedAudioContext.getInstance();
+        this.gainNode = this.context.createGain();
         this.gainNode.connect(this.context.destination);
-
-        // Ensure AudioContext resumes on user gesture
-        this.setupAudioContextResume();
     }
 
-    private setupAudioContextResume(): void {
-        const resumeContext = () => {
-            if (this.context.state === 'suspended') {
-                this.context.resume();
-            }
-        };
-        document.addEventListener('click', resumeContext);
-        document.addEventListener('keydown', resumeContext);
-    }
-
-    public setVolume(volume: number): void {
-        if (this.gainNode) {
-            this.gainNode.gain.setValueAtTime(volume, this.context.currentTime);
-        }
-    }
-
-    protected generateSineWaveBuffer(frequency: number, duration: number): Float32Array {
-        const length = Math.floor(this.context.sampleRate * duration);
-        const buffer = new Float32Array(length);
-        for (let i = 0; i < length; i++) {
-            buffer[i] = Math.sin(2 * Math.PI * frequency * (i / this.context.sampleRate));
-        }
-        return buffer;
-    }
+    abstract play(frequency: number, duration: number): void;
 
     public synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array {
         const length = Math.floor(this.context.sampleRate * 1); // Default 1 second buffer
@@ -69,10 +39,19 @@ export abstract class Synthesizer {
 
         return buffer;
     }
+
+    protected generateSineWaveBuffer(frequency: number, duration: number): Float32Array {
+        const length = Math.floor(this.context.sampleRate * duration);
+        const buffer = new Float32Array(length);
+        for (let i = 0; i < length; i++) {
+            buffer[i] = Math.sin(2 * Math.PI * frequency * (i / this.context.sampleRate));
+        }
+        return buffer;
+    }
 }
 
 // Concrete Synthesizer Implementation
-export class ConcreteSynthesizer extends Synthesizer {
+export class ConcreteSynthesizer extends BaseSynthesizer {
     public play(frequency: number, duration: number): void {
         const buffer = this.generateSineWaveBuffer(frequency, duration);
         const audioBuffer = this.context.createBuffer(1, buffer.length, this.context.sampleRate);
@@ -86,7 +65,7 @@ export class ConcreteSynthesizer extends Synthesizer {
     }
 }
 
-export class ChordSynthesizer extends Synthesizer {
+export class ChordSynthesizer extends BaseSynthesizer {
     private amplitudeController: AmplitudeController = new AmplitudeController();
     private sampleRate: number;
 
@@ -95,7 +74,7 @@ export class ChordSynthesizer extends Synthesizer {
         this.sampleRate = sampleRate;
     }
 
-    synthesize(frequencies: number[], duration: number): Float32Array {
+    public synthesize(frequencies: number[], duration: number): Float32Array {
         const length = Math.floor(this.sampleRate * duration);
         const chordData = new Float32Array(length);
 
@@ -119,31 +98,31 @@ export class ChordSynthesizer extends Synthesizer {
         return sineWave;
     }
 
-    playAudioBuffer(buffer: Float32Array): void {
+    public playAudioBuffer(buffer: Float32Array): void {
         const audioBuffer = this.context.createBuffer(1, buffer.length, this.sampleRate);
         audioBuffer.copyToChannel(buffer, 0);
         const source = this.context.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(this.context.destination);
+        source.connect(this.gainNode);
         source.start();
     }
 
-    playChord(frequencies: number[], duration: number): void {
+    public playChord(frequencies: number[], duration: number): void {
         const buffer = this.synthesize(frequencies, duration);
         this.playAudioBuffer(buffer);
     }
 
-    playMajorChord(root: number, duration: number): void {
+    public playMajorChord(root: number, duration: number): void {
         const frequencies = [root, root * 5 / 4, root * 3 / 2];
         this.playChord(frequencies, duration);
     }
 
-    playMinorChord(root: number, duration: number): void {
+    public playMinorChord(root: number, duration: number): void {
         const frequencies = [root, root * 6 / 5, root * 3 / 2];
         this.playChord(frequencies, duration);
     }
 
-    playDiminishedChord(root: number, duration: number): void {
+    public playDiminishedChord(root: number, duration: number): void {
         const frequencies = [root, root * 6 / 5, root * 3 / 2];
         this.playChord(frequencies, duration);
     }

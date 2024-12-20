@@ -1,10 +1,8 @@
 export class SharedAudioContext {
   private static instance: AudioContext | null = null;
 
-  // Private constructor to prevent direct instantiation
   private constructor() {}
 
-  // Static method to initialize and get the shared AudioContext
   public static getInstance(): AudioContext {
     if (!SharedAudioContext.instance) {
       SharedAudioContext.instance = new AudioContext();
@@ -19,7 +17,6 @@ export class SharedAudioContext {
     return SharedAudioContext.instance;
   }
 
-  // Static method to add event listeners for resuming the AudioContext
   public static setupResumeListeners(): void {
     const resumeContext = () => {
       if (SharedAudioContext.instance && SharedAudioContext.instance.state === "suspended") {
@@ -34,5 +31,5 @@ export class SharedAudioContext {
   }
 }
 
-// Setup listeners on import
+// Automatically set up listeners
 SharedAudioContext.setupResumeListeners();
