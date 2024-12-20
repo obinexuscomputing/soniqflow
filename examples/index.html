@@ -26,6 +26,7 @@
                     // Initialize SoniqWave with a seed
                     const seed = Math.floor(Math.random() * 1000);
                     const soniqWave = new SoniqWave.SoniqSound(seed);
+                    const playbackManager = new SoniqWave.AudioPlaybackManager();
 
                     // Get canvas element for visualization
                     const canvas = document.getElementById("visualization");
@@ -43,12 +44,14 @@
                         const amplitudes = [1.5, 1.2, 1.0, 1.8, 1.6]; // Increased amplitudes for louder sound
 
                         // Generate harmonic wave from background noise
-                        await soniqWave.generateHarmonicWave({
+                        const data = await soniqWave.generateHarmonicWave({
                             baseFrequency,
                             harmonics,
                             amplitudes,
                             canvas, // Pass canvas to generateHarmonicWave
                         });
+
+                        playbackManager.play(data, true); // Use playback manager to play in real-time
 
                         console.log("Harmonic wave generated and played!");
                     });
