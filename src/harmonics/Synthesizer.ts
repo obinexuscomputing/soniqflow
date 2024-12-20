@@ -1,3 +1,5 @@
+import { SharedAudioContext, AmplitudeController } from "../utils";
+
 // Synthesizer Interface
 export interface Synthesizer {
     play(frequency: number, duration: number): void;
