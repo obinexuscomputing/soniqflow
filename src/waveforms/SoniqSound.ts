@@ -53,7 +53,7 @@ export class SoniqSound {
         harmonics,
         amplitudes
       );
-
+      
       // Process harmonics
       const envelope = new Float32Array(harmonicWave.length).fill(1); // Example envelope
       const gain = 1; // Example gain
