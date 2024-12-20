@@ -6,6 +6,12 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "browser": "dist/index.umd.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "src"
+  ],
   "scripts": {
     "build": "rollup -c",
     "test": "jest",
@@ -31,6 +37,7 @@
     "eslint": "^8.0.0",
     "jest": "^29.0.0",
     "rollup": "^3.29.5",
+    "tslib": "^2.8.1",
     "typescript": "^5.0.0"
   }
 }
