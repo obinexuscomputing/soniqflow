@@ -10,6 +10,15 @@ export class FluteSynthesizer extends Synthesizer {
     constructor() {
         super();
         this.amplitudeController = new AmplitudeController();
+        this.initializeAudioContext();
+    }
+
+    private initializeAudioContext(): void {
+        document.addEventListener('click', () => {
+            if (this.context.state === 'suspended') {
+                this.context.resume();
+            }
+        });
     }
 
     synthesize(frequencies: number[], duration: number): Float32Array {

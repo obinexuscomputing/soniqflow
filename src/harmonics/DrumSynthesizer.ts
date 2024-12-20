@@ -15,6 +15,13 @@ export class DrumSynthesizer extends Synthesizer {
         this.context = context;
         this.gainNode = this.context.createGain();
         this.gainNode.connect(this.context.destination);
+
+        // Resume the AudioContext after a user gesture
+        document.addEventListener('click', () => {
+            if (this.context.state === 'suspended') {
+                this.context.resume();
+            }
+        });
     }
 
     public playKick(frequency: number = 150, duration: number = 0.5): void {
