@@ -22,7 +22,8 @@
     "dist",
     "README.md",
     "LICENSE",
-    "src"
+    "src",
+    "examples"
   ],
   "scripts": {
     "build": "rollup -c",
@@ -32,12 +33,15 @@
     "prepublishOnly": "npm run build && npm run test"
   },
   "keywords": [
+    "@obinexuscomputing/soniqwave",
+    "soniqwave",
     "white-noise",
     "harmonics",
     "PRNG",
-    "music-generation",
-    "nodejs",
-    "typescript"
+    "audio-visualization",
+    "audio-generation",
+    "audio-processing",
+    "audio-synthesizer"
   ],
   "author": "Obinexus Computing",
   "license": "ISC",
