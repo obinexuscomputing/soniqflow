@@ -8,7 +8,7 @@ import { AudioMixer } from '../audio/AudioMixer';
 import { AudioProcessor } from '../audio/AudioProcessor';
 import { AudioVisualizer } from '../audio/AudioVisualizer';
 
-export class SoniqWave {
+export class SoniqSound {
   private noiseGenerator: NoiseGenerator;
   private synthesizer: NoiseGeneratorSynthesizer;
   private amplitudeController: AmplitudeController;
