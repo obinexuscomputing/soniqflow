@@ -4,17 +4,9 @@ import { Synthesizer, ConcreteSynthesizer } from "../harmonics/Synthesizer";
 import { NoiseGenerator } from "../prng";
 import { NoiseType } from "../prng/NoiseGenerator";
 import { AmplitudeController, FrequencyTransformer } from "../utils";
+import { SharedAudioContext } from "../utils/";
 
-export let sharedAudioContext: AudioContext;
-
-document.addEventListener('click', () => {
-  if (!sharedAudioContext) {
-    sharedAudioContext = new AudioContext();
-  }
-  if (sharedAudioContext.state === 'suspended') {
-    sharedAudioContext.resume();
-  }
-});
+export let sharedAudioContext: AudioContext = SharedAudioContext.getInstance();
 
 export interface HarmonicWaveConfig {
   baseFrequency: number;
@@ -22,6 +14,7 @@ export interface HarmonicWaveConfig {
   amplitudes: number[];
   canvas?: HTMLCanvasElement;
 }
+
 export class SoniqSound {
   private noiseGenerator: NoiseGenerator;
   private harmonicSynthesizer: Synthesizer;
@@ -48,7 +41,7 @@ export class SoniqSound {
       violin: new ViolinSynthesizer(),
       piano: new PianoSynthesizer(),
       guitar: new GuitarSynthesizer(),
-      drum: new DrumSynthesizer(sharedAudioContext),
+      drum: new DrumSynthesizer(),
       flute: new FluteSynthesizer(),
     };
   }

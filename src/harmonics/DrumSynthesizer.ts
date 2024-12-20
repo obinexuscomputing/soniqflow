@@ -2,10 +2,9 @@ import { BaseSynthesizer } from "./Synthesizer";
 
 
 export class DrumSynthesizer extends BaseSynthesizer {
-    public play(frequency: number, duration: number): void {
-        this.playKick(frequency, duration);
-    }
-    
+    constructor() {
+        super();
+    }    
     public playKick(frequency: number = 150, duration: number = 0.5): void {
         const oscillator = this.context.createOscillator();
         oscillator.type = "sine";
@@ -55,5 +54,36 @@ export class DrumSynthesizer extends BaseSynthesizer {
         noiseFilter.connect(this.gainNode);
         noise.start(this.context.currentTime);
         noise.stop(this.context.currentTime + duration);
+    }
+
+    public synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array {
+        const sampleRate = this.context.sampleRate;
+        const bufferLength = sampleRate; // 1 second buffer
+        const data = new Float32Array(bufferLength);
+
+        for (let i = 0; i < bufferLength; i++) {
+            let sample = 0;
+            const time = i / sampleRate;
+
+            for (let j = 0; j < harmonics.length; j++) {
+                sample += amplitudes[j] * Math.sin(2 * Math.PI * harmonics[j] * baseFrequency * time);
+            }
+
+            data[i] = sample; // Simple harmonic synthesis for drum sounds.
+        }
+
+        return data;
+    }
+
+    public play(frequency: number, duration: number): void {
+        const buffer = this.synthesizeHarmonics(frequency, [1, 2], [1, 0.5]);
+        const audioBuffer = this.context.createBuffer(1, buffer.length, this.context.sampleRate);
+        audioBuffer.copyToChannel(buffer, 0);
+
+        const bufferSource = this.context.createBufferSource();
+        bufferSource.buffer = audioBuffer;
+        bufferSource.connect(this.gainNode);
+        bufferSource.start(this.context.currentTime);
+        bufferSource.stop(this.context.currentTime + duration);
     }
 }

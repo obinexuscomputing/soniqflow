@@ -1,10 +1,11 @@
 import { AmplitudeController } from '../utils';
-import { Synthesizer } from './Synthesizer'; // Adjust the import path as necessary
+import { BaseSynthesizer, Synthesizer } from './Synthesizer';
 
-export class PianoSynthesizer extends Synthesizer {
-    private context: AudioContext;
-    private gainNode: GainNode;
-    private context: AudioContext;
+
+export class PianoSynthesizer extends BaseSynthesizer implements Synthesizer {
+    protected context: AudioContext;
+    protected gainNode: GainNode;
+    protected amplitudeController: AmplitudeController;
 
     constructor() {
         super();

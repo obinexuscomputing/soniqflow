@@ -1,7 +1,8 @@
+import { BaseSynthesizer } from "./Synthesizer";
 
 export class GuitarSynthesizer extends BaseSynthesizer {
     private oscillator: OscillatorNode;
-
+    
     constructor() {
         super();
         this.oscillator = this.context.createOscillator();
