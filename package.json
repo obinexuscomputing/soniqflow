@@ -23,7 +23,9 @@
     "README.md",
     "LICENSE",
     "src",
-    "examples"
+    "examples",
+    "docs/"
+    
   ],
   "scripts": {
     "build": "rollup -c",
