@@ -35,10 +35,12 @@ export class SoniqWave {
     baseFrequency,
     harmonics,
     amplitudes,
+    canvas
   }: {
     baseFrequency: number;
     harmonics: number[];
     amplitudes: number[];
+    canvas: HTMLCanvasElement;
   }): Promise<void> {
     try {
       // Step 1: Generate base noise
@@ -67,7 +69,7 @@ export class SoniqWave {
 
       // Step 5: Visualize audio
       if (this.audioVisualizer.visualizeAudio) {
-        this.audioVisualizer.visualizeAudio(processedAudio);
+        this.audioVisualizer.visualizeAudio(harmonicWave, canvas);
       } else {
         console.warn('visualizeAudio method not implemented in AudioVisualizer. Skipping visualization.');
       }
