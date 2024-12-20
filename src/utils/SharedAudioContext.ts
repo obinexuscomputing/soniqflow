@@ -12,7 +12,7 @@ export class SharedAudioContext {
 
       return SharedAudioContext.instance;
   }
-
+  
   // Static method to add event listeners for resuming the AudioContext
   public static setupResumeListeners(): void {
       const resumeContext = () => {
