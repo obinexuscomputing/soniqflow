@@ -13,6 +13,7 @@ export interface HarmonicWaveConfig {
   amplitudes: number[];
   canvas?: HTMLCanvasElement;
 }
+// Shared AudioContext
 
 export class SoniqSound {
   private noiseGenerator: NoiseGenerator;

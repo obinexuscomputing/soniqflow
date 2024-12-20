@@ -6,8 +6,6 @@ export interface Synthesizer {
     synthesizeHarmonics(baseFrequency: number, harmonics: number[], amplitudes: number[]): Float32Array;
 }
 
-// Shared AudioContext
-const sharedAudioContext = new AudioContext();
 
 // Abstract Synthesizer Class
 export abstract class Synthesizer {
