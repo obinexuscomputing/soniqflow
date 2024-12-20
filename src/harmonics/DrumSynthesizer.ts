@@ -1,27 +1,8 @@
-import { Synthesizer } from "./Synthesizer";
 
 
-
-export class DrumSynthesizer extends Synthesizer {
-    play(frequency: number, duration: number): void {
-        // Default implementation to play a kick drum sound
+export class DrumSynthesizer extends BaseSynthesizer {
+    public play(frequency: number, duration: number): void {
         this.playKick(frequency, duration);
-    }
-    protected context: AudioContext;
-    protected gainNode: GainNode;
-
-    constructor(context: AudioContext) {
-        super();
-        this.context = context;
-        this.gainNode = this.context.createGain();
-        this.gainNode.connect(this.context.destination);
-
-        // Resume the AudioContext after a user gesture
-        document.addEventListener('click', () => {
-            if (this.context.state === 'suspended') {
-                this.context.resume();
-            }
-        });
     }
 
     public playKick(frequency: number = 150, duration: number = 0.5): void {

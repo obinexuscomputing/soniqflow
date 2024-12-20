@@ -1,27 +1,13 @@
-
-
-import { AmplitudeController } from '../utils';
-import { Synthesizer } from './Synthesizer';
-
-export class FluteSynthesizer extends Synthesizer {
+export class FluteSynthesizer extends BaseSynthesizer {
     private amplitudeController: AmplitudeController;
     private sampleRate: number = 44100;
 
     constructor() {
         super();
         this.amplitudeController = new AmplitudeController();
-        this.initializeAudioContext();
     }
 
-    private initializeAudioContext(): void {
-        document.addEventListener('click', () => {
-            if (this.context.state === 'suspended') {
-                this.context.resume();
-            }
-        });
-    }
-
-    synthesize(frequencies: number[], duration: number): Float32Array {
+    public synthesize(frequencies: number[], duration: number): Float32Array {
         if (frequencies.length !== 1) {
             throw new Error("FluteSynthesizer only supports single frequency tones.");
         }

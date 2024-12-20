@@ -65,7 +65,11 @@ export class ConcreteSynthesizer extends BaseSynthesizer {
     }
 }
 
+
 export class ChordSynthesizer extends BaseSynthesizer {
+    public play(frequency: number, duration: number): void {
+        this.playChord([frequency], duration);
+    }
     private amplitudeController: AmplitudeController = new AmplitudeController();
     private sampleRate: number;
 
@@ -79,7 +83,7 @@ export class ChordSynthesizer extends BaseSynthesizer {
         const chordData = new Float32Array(length);
 
         frequencies.forEach(frequency => {
-            const sineWave = this.generateSineWave(frequency, length);
+            const sineWave = this.generateSineWaveBuffer(frequency, duration);
             for (let i = 0; i < length; i++) {
                 chordData[i] += sineWave[i];
             }
@@ -88,14 +92,6 @@ export class ChordSynthesizer extends BaseSynthesizer {
         const normalizedChord = this.amplitudeController.normalizeAmplitudes(chordData);
         const envelope = this.amplitudeController.generateAmplitudeEnvelope(length);
         return this.amplitudeController.applyAmplitudeEnvelope(normalizedChord, envelope);
-    }
-
-    private generateSineWave(frequency: number, length: number): Float32Array {
-        const sineWave = new Float32Array(length);
-        for (let i = 0; i < length; i++) {
-            sineWave[i] = Math.sin(2 * Math.PI * frequency * i / this.sampleRate);
-        }
-        return sineWave;
     }
 
     public playAudioBuffer(buffer: Float32Array): void {
